@@ -22,7 +22,7 @@ This DevOps project employs a comprehensive CI/CD pipeline to automate the devel
 
 - My current examples of this project are located here:
   - This included Terraform, Bash scripts and other scripting
-  - https://github.com/T-Py-T/devops-install-scripts
+  - [devops-install-scripts](https://github.com/T-Py-T/devops-install-scripts)
 
 ## Best Practices Followed
 
@@ -38,133 +38,155 @@ The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built
 
 ![Architecture Diagram](docs/img/CICD-Architechture.png)
 
-### Key Components
+## Key Components
 
-#### A. **Source Code Management**
+### A. **Source Code Management**
 
-- **GitHub**: 
-  - Serves as the backbone of version control, ensuring seamless collaboration among team members.
-  - Pull requests and branch strategies help enforce coding standards and encourage peer reviews.
-  - Integrated with Jenkins to trigger automated builds and tests upon code commits, ensuring continuous integration.
+#### **GitHub:**
 
-#### B. **Build and Test Automation**
+- Serves as the backbone of version control, ensuring seamless collaboration among team members.
+- Pull requests and branch strategies help enforce coding standards and encourage peer reviews.
+- Integrated with Jenkins to trigger automated builds and tests upon code commits, ensuring continuous integration.
 
-## Branch Structure and CI/CD Workflow
+### B. **Build and Test Automation**
 
-Each microservice in this project has its own branch in the repository. This ensures that changes to one service do not affect others and allows for independent development and deployment.
+!!! Note Branch Structure and CI/CD Workflow
 
-### Branches
+    This repo is unique in that we are able to allow each of the microservices written in different languages to run their independant Jenkins file corresponding to that language.
 
-- `frontend`: Contains the code and Jenkinsfile for the `frontend` service.
-- `cartservice`: Contains the code and Jenkinsfile for the `cartservice` service.
-- `productcatalogservice`: Contains the code and Jenkinsfile for the `productcatalogservice` service.
-- `currencyservice`: Contains the code and Jenkinsfile for the `currencyservice` service.
-- `paymentservice`: Contains the code and Jenkinsfile for the `paymentservice` service.
-- `shippingservice`: Contains the code and Jenkinsfile for the `shippingservice` service.
-- `emailservice`: Contains the code and Jenkinsfile for the `emailservice` service.
-- `checkoutservice`: Contains the code and Jenkinsfile for the `checkoutservice` service.
-- `recommendationservice`: Contains the code and Jenkinsfile for the `recommendationservice` service.
+    Each microservice in this project has its own branch in the repository. This ensures that changes to one service do not affect others and allows for independent development and deployment.
+
+#### **Branches**
+
 - `adservice`: Contains the code and Jenkinsfile for the `adservice` service.
-- `loadgenerator`: Contains the code and Jenkinsfile for the `loadgenerator` service.
+- `cartservice`: Contains the code and Jenkinsfile for the `cartservice` service.
+- `checkoutservice`: Contains the code and Jenkinsfile for the `checkoutservice` service.
+- `currencyservice`: Contains the code and Jenkinsfile for the `currencyservice` service.
+- `emailservice`: Contains the code and Jenkinsfile for the `emailservice` service.
+- `frontend`: Contains the code and Jenkinsfile for the `frontend` service.
 - `infra-steps`: Contains the  deployment.yaml and Jenkinsfile. This is where we can run updates for ArgoCD to identify changes the deployment (image tag/version)
+- `loadgenerator`: Contains the code and Jenkinsfile for the `loadgenerator` service.
+- `paymentservice`: Contains the code and Jenkinsfile for the `paymentservice` service.
+- `productcatalogservice`: Contains the code and Jenkinsfile for the `productcatalogservice` service.
+- `recommendationservice`: Contains the code and Jenkinsfile for the `recommendationservice` service.
+- `shippingservice`: Contains the code and Jenkinsfile for the `shippingservice` service.
 
-### Example Jenkinsfile
+#### Example Jenkinsfile
 
 Each branch has a `Jenkinsfile` that defines the CI/CD pipeline for that specific service. This allows language specific testing automation pipelines.
 
 Below is an example of what the adservice Jenkinsfile looks like (Java app):
 
 ```groovy
+
 pipeline {
     agent any
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'adservice', url: 'https://github.com/T-Py-T/eks-jenkins-microservices-cicd.git'
-            }
-        }
-        stage('Build') {
-            steps {
-                // Build the application
-                sh './gradlew build'
-            }
-        }
-        stage('Test') {
-            steps {
-                // Run unit tests
-                sh './gradlew test'
-            }
-        }
-        stage('Build & Tag Docker Image') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker build -t tnt850910/adservice:latest ."
-                    } } } }
-        
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push tnt850910/adservice:latest "
-                    } } } }
+    environment {
+        MAJOR_VERSION = '1'
+        DOCKERHUB_REPO = '{DOCKERHUB-REPO}'
+        GIT_REPO_URL = '{REPO-URL}'
+        VERSION_TAG = "${MAJOR_VERSION}.${BUILD_NUMBER}"
+        DOCKER_IMAGE = "${DOCKERHUB_REPO}/adservice:${VERSION_TAG}"
     }
-    post {
-        always {
-            // Clean up workspace
-            cleanWs()
-        }
+    tools {
+        gradle 'gradle8'
+        jdk 'jdk19'
+    }
+    stages {
+        // Clean the workspace
+        stage('Clean Repo') {steps {deleteDir()}}
+        stage('Pull Repo') { 
+            steps { 
+                withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    git branch: 'adservice', url: "https://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_REPO_URL.replace('https://', '')}"
+                }}}
+        stage('Gradle Compile') { 
+            steps {  
+                sh "chmod +x ./gradlew"
+                sh "./gradlew compileJava" 
+            }}
+        // stage('Format Code') {steps {sh "./gradlew googleJavaFormat"}} // FORMATTING NOT WORKING (GOOGLE FORMAT FAILS)
+        stage('Gradle Build') {steps {sh "./gradlew build"}}
+        // stage('Gradle Test') {steps {sh "./gradlew test"}} // There are no tests in the java branch currently 
+        stage('Trivy FS Scan') {steps {sh "trivy fs --format table -o fs.html ." }}       
+        stage('Build & Tag Docker Image') { 
+            steps {script { 
+                withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                    sh "docker build -t ${env.DOCKER_IMAGE} ."
+                }}}}
+        stage('Docker Image Scan') { 
+            steps {script {
+                sh "trivy image --format table -o trivy-image-report.html ${env.DOCKER_IMAGE}" 
+                }}}       
+        stage('Push Docker Image') {
+            steps { 
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker push ${env.DOCKER_IMAGE}" 
+                }}}}
+        stage('Clean Workspace') {steps {deleteDir()}}
+        stage('Pull Infra-Steps Repo') { 
+            steps { 
+                withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    git branch: 'Infra-Steps', url: "https://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_REPO_URL.replace('https://', '')}"
+                }}}
+        stage('Update and Commit Deployment YAML') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    script {
+                        sh """
+                            sed -i 's|image: ${env.DOCKERHUB_REPO}/adservice:.*|image: ${env.DOCKER_IMAGE} |' deployment-service.yml
+                            git add deployment-service.yml
+                            git commit -m "Update Docker image to ${env.DOCKER_IMAGE}" || echo "No changes to commit"
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_REPO_URL.replace('https://', '')} Infra-Steps
+                        """
+                    }}}}
+        stage('Create Pull Request') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh """
+                        gh auth login --with-token <<< "${GIT_PASSWORD}"
+                        gh pr create --title "Update Docker image to ${env.DOCKERHUB_REPO}/adservice:${env.VERSION_TAG}" --body "This PR updates the Docker image to ${env.DOCKER_IMAGE}" --base main --head Infra-Steps
+                    """
+                }}}
     }
 }
+```
 
+!!! Note Jenkins - #FUTURE-TODO
+    - Relies on external Terraform setup for environment to work
+    - Call Terraform in pipeline
+        - Allow for tear down of resources after load testing is completed.
+        - Pipeline created cluster can be used for load or AB testing.
 
 - **Jenkins**:
   - Orchestrates the CI/CD pipeline, ensuring that builds, tests, and deployments are fully automated.
-  - Integrates with tools like GitHub and Docker to create a streamlined process from code commit to deployment.
-  - Provides real-time feedback to developers about build status and test results.
+  - Integrates with tools like GitHub, Docker, Trivy, SonarQube, Kubernetes to create a streamlined process from code commit to deployment.
+  - Provides real-time feedback to developers/devops teams about build status and test results.
 
   ![Jenkins Multibranch](docs/img/jenkins-multibranch.png)
 
-- **Jenkins-TODO**:
-  - Relies on external Terraform setup for environment to work
-    - When cluster is built API changes
-    - Permissions for Jenkins need to be created with cluster (kubectl)
-  - Call Terraform in pipeline
-    - Allow for tear down of resources after load testing is completed.
-    - Pipeline created cluster can be used for load or AB testing.
+  **Example Application Pipeline**
+  Here is an example of the above Jenkinsfile for the adservice microservice (Java) running after a merge
+  ![Adservice Pipeline](docs/img/jenkins-adservice-pipeline.png)
 
-- **Without Terraform :**
-- Kubernetes deployment (apply and get pods) fails
-![Jenkins Pipeline](docs/img/Jenkins-Pipeline.png)
-- **With Terraform :**
-![Completed Kube Deployment](docs/img/Completed-Kube-Deployment.png)
-
-- **Maven**:
-  - Simplifies dependency management and builds process for Java projects.
-  - Ensures that all dependenciess ns are resolved before building the application, reducing errors and inconsistencies.
+  **Example CD Pipeline**
+  Here is an example of the above Jenkinsfile for the Infr-Steps running after a successful build since the image on the deployment-service.yml is modified. This triggers build of this branch which applies the changes to the kubernetes cluster.
+  **NOTE** - This runs every time the branch is updated with a PR (auto complete after YAML linting)
+  ![Infrasteps Pipeline](docs/img/jenkins-infrasteps-pipeline.png)
 
 #### C. **Security Scanning**
 
 - **Aqua Trivy**:
   - Scans Docker images and source code for vulnerabilities, ensuring that potential security issues are caught before deployment.
   - Generates detailed reports that can be used to address vulnerabilities promptly.
-
   ![Trivy Scan](docs/img/defaultImage.png)
-
-- **SonarQube**:
-  - Conducts comprehensive code analysis to identify bugs, code smells, and security vulnerabilities.
-  - Provides actionable insights to improve code quality and enforce compliance with coding standards.
-
-  ![Sonar Report](docs/img/defaultImage.png)
 
 #### D. **Containerization**
 
 - **Docker**:
-  - Packages the Java application into lightweight, portable containers, ensuring consistent environments across development, testing, and production stages.
+  - Packages the application into lightweight, portable containers, ensuring consistent environments across development, testing, and production stages.
   - Simplifies deployment by abstracting underlying infrastructure differences.
-
-  *Callout Area*: Showcase Dockerfile and container registry management, explaining how this enables rapid, reliable deployments.
 
 #### E. **Container Orchestration**
 
@@ -172,7 +194,7 @@ pipeline {
   - Manages the deployment and scaling of containerized applications in a highly available environment.
   - Ensures zero downtime by automatically scaling and redistributing workloads as needed.
   - Namespace configurations (e.g., `webapps` and `namespace 2`) isolate different parts of the system for better organization and security. The second namespace is not currently used, but is planned for a similar python web app
-  - The configuration for EKS was update from the **terraform.tf** listed in the linked repo and shown implemented below in a later section.
+  - The configuration for EKS was update from the terraform **main.tf** listed in the [devops-install-scripts](https://github.com/T-Py-T/devops-install-scripts) repo and shown implemented below in a later section.
 
 - **EKS Nodes**
   ![EKS Nodes Image](docs/img/EKS-Nodes.png)
@@ -197,8 +219,6 @@ pipeline {
 
   ![Grafana Image](docs/img/Grafana.png)
 
-  *Callout Area*: Include snapshots of Grafana dashboards and Prometheus query outputs, demonstrating the observability aspect of the pipeline.
-
 #### G. **Infrastructure as Code (IaC)**
 
 - **Terraform**:
@@ -215,24 +235,26 @@ pipeline {
     - **IAM Roles and Policies**: Configures roles and permissions for both the EKS cluster and node group to interact with AWS services.
   - Facilitates rapid updates and scaling of infrastructure to match application requirements.
 
-``` bash
-terraform plan
-```
+##### Terraform Examples
 
+Commands used with the main.tf to deploy the EKS infrastructure
+
+``` bash 
+terraform plan 
+```
 ![Terraform Plan](docs/img/TerraformPlan.png)
 
-``` bash
-terraform apply --auto-approve
+```bash
+    terraform apply --auto-approve
 ```
-
 ![Terraform Apply](docs/img/TerraformApply.png)
 ![Terraform Output](docs/img/Terraform-Output.png)
 
 #### H. **AWS Integration**
 
-- **EC2**: Used to house the servers that control the CI/CD process and handles the actions.
-  ![EC2 Instances](docs/img/EC2_Instances.png)
-
+- **EC2**:
+  - Used to house the servers that control the CI/CD process and handles the actions
+  - ECS also uses the EC2 instances for scaling the EKS cluster
 - **VPC**:
   - Ensures a secure and isolated environment for hosting applications and infrastructure.
 - **S3 Bucket**:
