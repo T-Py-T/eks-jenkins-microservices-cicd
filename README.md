@@ -1,6 +1,20 @@
-# Java-Blogging-App (DevOps Full CI/CD with Jenkins)
+# AWS Devops/Kubernetes microservice CI/CD
+This DevOps project employs a comprehensive CI pipeline to automate the development and deployment process. The architecture emphasizes security, performance, and reliability, integrating industry-leading tools and practices.
 
-[!HINT] This project is a simple java web app that allows users to post their thoughts and blog digitally. Its mostly used to prove that the pipeline is working.
+!!! note "TODO"
+    - Merge the AWS docs with the microservices (AKS Readme)
+    - Annotate that infra-steps is used to deploy instead of main
+
+<!--
+!!! warning "Warning"
+    Warning Text
+
+!!! error "Error"
+    Error
+
+-->
+
+!!! hint This project is a simple java web app that allows users to post their thoughts and blog digitally. Its mostly used to prove that the pipeline is working.
 
 This DevOps project employs a comprehensive CI/CD pipeline to automate the development and deployment process. The architecture emphasizes security, performance, and reliability, integrating industry-leading tools and practices.
 
@@ -22,7 +36,7 @@ This DevOps project employs a comprehensive CI/CD pipeline to automate the devel
 
 The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built" system, showcasing the tools and workflows utilized.
 
-![Architecture Diagram](images/CICD-Architechture.png)
+![Architecture Diagram](docs/img/CICD-Architechture.png)
 
 ### Key Components
 
@@ -35,10 +49,82 @@ The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built
 
 #### B. **Build and Test Automation**
 
+## Branch Structure and CI/CD Workflow
+
+Each microservice in this project has its own branch in the repository. This ensures that changes to one service do not affect others and allows for independent development and deployment.
+
+### Branches
+
+- `frontend`: Contains the code and Jenkinsfile for the `frontend` service.
+- `cartservice`: Contains the code and Jenkinsfile for the `cartservice` service.
+- `productcatalogservice`: Contains the code and Jenkinsfile for the `productcatalogservice` service.
+- `currencyservice`: Contains the code and Jenkinsfile for the `currencyservice` service.
+- `paymentservice`: Contains the code and Jenkinsfile for the `paymentservice` service.
+- `shippingservice`: Contains the code and Jenkinsfile for the `shippingservice` service.
+- `emailservice`: Contains the code and Jenkinsfile for the `emailservice` service.
+- `checkoutservice`: Contains the code and Jenkinsfile for the `checkoutservice` service.
+- `recommendationservice`: Contains the code and Jenkinsfile for the `recommendationservice` service.
+- `adservice`: Contains the code and Jenkinsfile for the `adservice` service.
+- `loadgenerator`: Contains the code and Jenkinsfile for the `loadgenerator` service.
+- `infra-steps`: Contains the  deployment.yaml and Jenkinsfile. This is where we can run updates for ArgoCD to identify changes the deployment (image tag/version)
+
+### Example Jenkinsfile
+
+Each branch has a `Jenkinsfile` that defines the CI/CD pipeline for that specific service. This allows language specific testing automation pipelines.
+
+Below is an example of what the adservice Jenkinsfile looks like (Java app):
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'adservice', url: 'https://github.com/T-Py-T/eks-jenkins-microservices-cicd.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                // Build the application
+                sh './gradlew build'
+            }
+        }
+        stage('Test') {
+            steps {
+                // Run unit tests
+                sh './gradlew test'
+            }
+        }
+        stage('Build & Tag Docker Image') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker build -t tnt850910/adservice:latest ."
+                    } } } }
+        
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker push tnt850910/adservice:latest "
+                    } } } }
+    }
+    post {
+        always {
+            // Clean up workspace
+            cleanWs()
+        }
+    }
+}
+
+
 - **Jenkins**:
   - Orchestrates the CI/CD pipeline, ensuring that builds, tests, and deployments are fully automated.
   - Integrates with tools like GitHub and Docker to create a streamlined process from code commit to deployment.
   - Provides real-time feedback to developers about build status and test results.
+
+  ![Jenkins Multibranch](docs/img/jenkins-multibranch.png)
 
 - **Jenkins-TODO**:
   - Relies on external Terraform setup for environment to work
@@ -50,26 +136,13 @@ The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built
 
 - **Without Terraform :**
 - Kubernetes deployment (apply and get pods) fails
-![Jenkins Pipeline](images/Jenkins-Pipeline.png)
+![Jenkins Pipeline](docs/img/Jenkins-Pipeline.png)
 - **With Terraform :**
-![Completed Kube Deployment](images/Completed-Kube-Deployment.png)
+![Completed Kube Deployment](docs/img/Completed-Kube-Deployment.png)
 
 - **Maven**:
   - Simplifies dependency management and builds process for Java projects.
   - Ensures that all dependenciess ns are resolved before building the application, reducing errors and inconsistencies.
-
-- **Nexus Repository Manager**:
-  - Acts as a centralized artifact repository, storing and managing Maven dependencies, Docker images, and other build artifacts.
-  - Improves build speed by caching dependencies locally, reducing network traffic and build times.
-  - Enhances security by providing a controlled, internal source for third-party libraries and internally developed components.
-
-  - **Nexus hosted artifacts**
-  ![Nexus Dashboard](images/NexusDashboard.png)
-  - **Nexus Artifacts**
-  ![Nexus Artifacts](images/NexusArtifacts.png)
-  - **Nexus feedback in Jenkins**
-  ![Nexus Feedback](images/NexusFeedback.png)
-
 
 #### C. **Security Scanning**
 
@@ -77,13 +150,13 @@ The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built
   - Scans Docker images and source code for vulnerabilities, ensuring that potential security issues are caught before deployment.
   - Generates detailed reports that can be used to address vulnerabilities promptly.
 
-  ![Trivy Scan](images/defaultImage.png)
+  ![Trivy Scan](docs/img/defaultImage.png)
 
 - **SonarQube**:
   - Conducts comprehensive code analysis to identify bugs, code smells, and security vulnerabilities.
   - Provides actionable insights to improve code quality and enforce compliance with coding standards.
 
-  ![Sonar Report](images/defaultImage.png)
+  ![Sonar Report](docs/img/defaultImage.png)
 
 #### D. **Containerization**
 
@@ -102,13 +175,13 @@ The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built
   - The configuration for EKS was update from the **terraform.tf** listed in the linked repo and shown implemented below in a later section.
 
 - **EKS Nodes**
-  ![EKS Nodes Image](images/EKS-Nodes.png)
+  ![EKS Nodes Image](docs/img/EKS-Nodes.png)
 
 - **EKS CLuster**
-  ![EKS Cluster Image](images/EKS-Cluster.png)
+  ![EKS Cluster Image](docs/img/EKS-Cluster.png)
 
 - **EKS Networking**
-  ![EKS Cluster Image](images/EKS-Networking.png)
+  ![EKS Cluster Image](docs/img/EKS-Networking.png)
 
 #### F. **Monitoring and Observability**
 
@@ -116,13 +189,13 @@ The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built
   - Collects metrics from various components of the application and infrastructure, providing deep insights into system health and performance.
   - Supports custom queries to detect anomalies and trigger alerts proactively.
 
-  ![Prometheus Image](images/Prometheus.png)
+  ![Prometheus Image](docs/img/Prometheus.png)
 
 - **Grafana**:
   - Provides user-friendly dashboards for visualizing Prometheus metrics.
   - Enables stakeholders to monitor key performance indicators (KPIs) in real-time, ensuring system reliability.
 
-  ![Grafana Image](images/Grafana.png)
+  ![Grafana Image](docs/img/Grafana.png)
 
   *Callout Area*: Include snapshots of Grafana dashboards and Prometheus query outputs, demonstrating the observability aspect of the pipeline.
 
@@ -146,19 +219,19 @@ The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built
 terraform plan
 ```
 
-![Terraform Plan](images/TerraformPlan.png)
+![Terraform Plan](docs/img/TerraformPlan.png)
 
 ``` bash
 terraform apply --auto-approve
 ```
 
-![Terraform Apply](images/TerraformApply.png)
-![Terraform Output](images/Terraform-Output.png)
+![Terraform Apply](docs/img/TerraformApply.png)
+![Terraform Output](docs/img/Terraform-Output.png)
 
 #### H. **AWS Integration**
 
 - **EC2**: Used to house the servers that control the CI/CD process and handles the actions.
-  ![EC2 Instances](images/EC2_Instances.png)
+  ![EC2 Instances](docs/img/EC2_Instances.png)
 
 - **VPC**:
   - Ensures a secure and isolated environment for hosting applications and infrastructure.
