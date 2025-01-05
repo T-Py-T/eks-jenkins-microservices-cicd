@@ -135,12 +135,14 @@ Below is an example of what the adservice Jenkinsfile looks like (Java app):
 
 pipeline {
     agent any
+
     environment {
         MAJOR_VERSION = '1'
-        DOCKERHUB_REPO = '{DOCKERHUB-REPO}'
-        GIT_REPO_URL = '{REPO-URL}'
+        DOCKERHUB_REPO = 'tnt850910'
+        BRANCH = 'adservice'
+        GIT_REPO_URL = 'https://github.com/T-Py-T/eks-jenkins-microservices-cicd'
         VERSION_TAG = "${MAJOR_VERSION}.${BUILD_NUMBER}"
-        DOCKER_IMAGE = "${DOCKERHUB_REPO}/adservice:${VERSION_TAG}"
+        DOCKER_IMAGE = "${DOCKERHUB_REPO}/${BRANCH}:${VERSION_TAG}"
     }
     tools {
         gradle 'gradle8'
@@ -149,10 +151,17 @@ pipeline {
     stages {
         // Clean the workspace
         stage('Clean Repo') {steps {deleteDir()}}
-        stage('Pull Repo') { 
-            steps { 
-                withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    git branch: 'adservice', url: "https://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_REPO_URL.replace('https://', '')}"
+        stage('Pull Repo') { steps { withCredentials(
+            [usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+            git branch: "${env.BRANCH}", url: "https://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_REPO_URL.replace('https://', '')}"
+        }}}
+        stage('Trivy FS Scan') {
+            steps {
+                script {
+                    def trivyOutput = sh(script: "trivy fs --severity HIGH,CRITICAL --format table .", returnStdout: true).trim()
+                    println trivyOutput // Display Trivy scan results
+                    if (trivyOutput.contains("Total: 0")) { echo "No vulnerabilities found in the Docker image."}
+                    else { echo "Vulnerabilities found in the Docker image." }
                 }}}
         stage('Gradle Compile') { 
             steps {  
@@ -161,22 +170,26 @@ pipeline {
             }}
         // stage('Format Code') {steps {sh "./gradlew googleJavaFormat"}} // FORMATTING NOT WORKING (GOOGLE FORMAT FAILS)
         stage('Gradle Build') {steps {sh "./gradlew build"}}
-        stage('Gradle Test') {steps {sh "./gradlew test"}}
-        stage('Trivy FS Scan') {steps {sh "trivy fs --format table -o fs.html ." }}       
+        stage('Gradle Test') {steps {sh "./gradlew test"}} // There are no tests in the java branch currently 
         stage('Build & Tag Docker Image') { 
             steps {script { 
                 withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                    sh "echo DOCKER_IMAGE: ${env.DOCKER_IMAGE} "
                     sh "docker build -t ${env.DOCKER_IMAGE} ."
                 }}}}
-        stage('Docker Image Scan') { 
-            steps {script {
-                sh "trivy image --format table -o trivy-image-report.html ${env.DOCKER_IMAGE}" 
-                }}}       
+        stage('Trivy Image Scan') {
+            steps {
+                script {
+                    def trivyOutput = sh(script: "trivy image --severity HIGH,CRITICAL --format table ${env.DOCKER_IMAGE}", returnStdout: true).trim()
+                    println trivyOutput // Display Trivy scan results
+                    if (trivyOutput.contains("Total: 0")) { echo "No vulnerabilities found in the Docker image."}
+                    else { echo "Vulnerabilities found in the Docker image." }
+                }}}
         stage('Push Docker Image') {
             steps { 
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push ${env.DOCKER_IMAGE}" 
+                        sh "docker push ${env.DOCKER_IMAGE}"
                 }}}}
         stage('Clean Workspace') {steps {deleteDir()}}
         stage('Pull Infra-Steps Repo') { 
@@ -195,14 +208,6 @@ pipeline {
                             git push https://${GIT_USERNAME}:${GIT_PASSWORD}@${env.GIT_REPO_URL.replace('https://', '')} Infra-Steps
                         """
                     }}}}
-        stage('Create Pull Request') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh """
-                        gh auth login --with-token <<< "${GIT_PASSWORD}"
-                        gh pr create --title "Update Docker image to ${env.DOCKERHUB_REPO}/adservice:${env.VERSION_TAG}" --body "This PR updates the Docker image to ${env.DOCKER_IMAGE}" --base main --head Infra-Steps
-                    """
-                }}}
     }
 }
 ```
