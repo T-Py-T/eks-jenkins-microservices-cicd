@@ -1,42 +1,102 @@
 # AWS Devops/Kubernetes microservice CI/CD
-This DevOps project employs a comprehensive CI pipeline to automate the development and deployment process. The architecture emphasizes security, performance, and reliability, integrating industry-leading tools and practices.
 
+-This project is using an example microservices demo (Google Cloud) with the link shown below.
+
+> **My DevOps Scripting Examples**
+    - Re-usable examples Terraform, Bash scripts and other scripting
+      - https://github.com/T-Py-T/devops-install-scripts
+
+## Application overview
+
+[Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo) is a cloud-first microservices demo application consisting of 11 microservices applications. The application is a web-based e-commerce app where users can browse items, add them to the cart, and purchase them.
+
+!!! Note Branch Structure and CI/CD Workflow
+
+    This repo is unique in that we are able to allow each of the microservices written in different languages to have **own branch** in the repository..
+
+    Each microservice in this project has its own **Independant Jenkins** file corresponding to that language. This ensures that changes to one service do not affect others and allows for independent development and deployment.
+
+### Application Architecture
+
+Each of the 11 microservices written in different languages that talk to each other over gRPC.
+
+[![Architecture of microservices](/docs/img/architecture-diagram.png)](/docs/img/architecture-diagram.png)
+
+Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
+
+| Service | Language |   Description     |
+| -------| --------| -------- |
+| [frontend](/src/frontend) | Go    | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. |
+| [cartservice](/src/cartservice) | C#  | Stores the items in the user's shopping cart in Redis and retrieves it.   |
+| [productcatalogservice](/src/productcatalogservice) | Go   | Provides the list of products from a JSON file and ability to search products and get individual products.  |
+| [currencyservice](/src/currencyservice) | Node.js   | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. |
+| [paymentservice](/src/paymentservice)  | Node.js       | Charges the given credit card info (mock) with the given amount and returns a transaction ID.                                     |
+| [shippingservice](/src/shippingservice)             | Go            | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)                                 |
+| [emailservice](/src/emailservice)                   | Python        | Sends users an order confirmation email (mock).                                                                                   |
+| [checkoutservice](/src/checkoutservice)             | Go            | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.                            |
+| [recommendationservice](/src/recommendationservice) | Python        | Recommends other products based on what's given in the cart.                                                                      |
+| [adservice](/src/adservice)                         | Java          | Provides text ads based on given context words.                                                                                   |
+| [loadgenerator](/src/loadgenerator)                 | Python/Locust | Continuously sends requests imitating realistic user shopping flows to the frontend.     |
+
+### Screenshots
+
+| Home Page | Checkout Screen |
+| ------- | ----- |
+| [![Screenshot of store homepage](/docs/img/online-boutique-frontend-1.png)](/docs/img/online-boutique-frontend-1.png) | [![Screenshot of checkout screen](/docs/img/online-boutique-frontend-2.png)](/docs/img/online-boutique-frontend-2.png) |
+
+## Features
+
+- **[Kubernetes](https://kubernetes.io)/[EKS]():**
+  The app is designed to run on Kubernetes (both locally on "Docker for Desktop", as well as on the cloud with EKS).
+- **[gRPC](https://grpc.io):** Microservices use a high volume of gRPC calls to communicate to each other.
+- **Synthetic Load Generation:** The application demo comes with a background job that creates realistic usage patterns on the website using [Locust](https://locust.io/) load generator.
+
+<!-- 
+**************** TODO SECTION 
+
+> # Note: This is a reminder to come back and update this section.
+- [ ] Add screenshots of monitoring dashboards
+- [ ] Add ArgoCD Images/Section
+- [ ] Terraform Section?
+- [ ] Prometheus Section? 
+
+Markdown examples
 !!! note "TODO"
     - Merge the AWS docs with the microservices (AKS Readme)
     - Annotate that infra-steps is used to deploy instead of main
 
-<!--
 !!! warning "Warning"
     Warning Text
 
 !!! error "Error"
     Error
-
 -->
 
-!!! hint This project is a simple java web app that allows users to post their thoughts and blog digitally. Its mostly used to prove that the pipeline is working.
-
-This DevOps project employs a comprehensive CI/CD pipeline to automate the development and deployment process. The architecture emphasizes security, performance, and reliability, integrating industry-leading tools and practices.
-
-## My DevOps Scripting Examples
-
-- My current examples of this project are located here:
-  - This included Terraform, Bash scripts and other scripting
-  - [devops-install-scripts](https://github.com/T-Py-T/devops-install-scripts)
 
 ## Best Practices Followed
 
-1. **Automation**: The build, test, and deployment process is automated, reducing the risk of human error and speeding up the cycle times. Automation ensures that every code change is tested and validated before deployment.
-2. **Security First**: Integrating Aqua Trivy and SonarQube ensures that security vulnerabilities and code quality issues are detected and addressed early in the pipeline, fostering a secure development lifecycle.
-3. **Scalability**: Kubernetes provides a scalable infrastructure that can handle fluctuating loads, ensuring consistent performance during peak traffic.
-4. **Observability**: Using Grafana and Prometheus allows real-time monitoring, enabling proactive identification and resolution of potential issues before they impact users.
-5. **Version Control and Code Review**: GitHub serves as the foundation for collaboration and quality control, ensuring that only well-reviewed, high-quality code reaches production.
+### DevOps
+
+- **Automation**: The build, test, and deployment process is automated, reducing the risk of human error and speeding up the cycle times. Automation ensures that every code change is tested and validated before deployment.
+- **Security First**: Integrating Aqua Trivy ensures that security vulnerabilities and code quality issues are detected and addressed early in the pipeline, fostering a secure development lifecycle.
+- **Scalability**: Kubernetes provides a scalable infrastructure that can handle fluctuating loads, ensuring consistent performance during peak traffic.
+- **Version Control and Code Review**: Azure Repos serves as the foundation for collaboration and quality control, ensuring that only well-reviewed, high-quality code reaches production.
+<!-- - **Observability**: Using istio allows real-time monitoring, enabling proactive identification and resolution of potential issues before they impact users.
+- **GitOps with ArgoCD**: Using the repo monitoring of ArgoCD, we are able to detect changes in the mainfest of the repository and sync the changes into the Kubernetes environment. -->
+
+### DevSecOps
+
+- **Secrets Management**: Docker credentials are stored securely using Jenkins server.
+- **Static Analysis**: Trivy is used for static analysis.
+- **Build and Push Images**: Docker images are built and pushed to Docker Hub.
+- **Image Scanning**: Docker images are pulled and scanned for vulnerabilities using Trivy.
+- **Pull and Test Images**: Docker images are pulled and tested.
 
 ## Architecture
 
 The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built" system, showcasing the tools and workflows utilized.
 
-![Architecture Diagram](docs/img/CICD-Architechture.png)
+![Architecture Diagram](docs/img/CICD-EKS-Architechture.png)
 
 ## Key Components
 
@@ -50,26 +110,20 @@ The CI/CD pipeline is depicted in the diagram below, which mirrors the "as-built
 
 ### B. **Build and Test Automation**
 
-!!! Note Branch Structure and CI/CD Workflow
-
-    This repo is unique in that we are able to allow each of the microservices written in different languages to run their independant Jenkins file corresponding to that language.
-
-    Each microservice in this project has its own branch in the repository. This ensures that changes to one service do not affect others and allows for independent development and deployment.
-
 #### **Branches**
 
-- `adservice`: Contains the code and Jenkinsfile for the `adservice` service.
-- `cartservice`: Contains the code and Jenkinsfile for the `cartservice` service.
-- `checkoutservice`: Contains the code and Jenkinsfile for the `checkoutservice` service.
-- `currencyservice`: Contains the code and Jenkinsfile for the `currencyservice` service.
-- `emailservice`: Contains the code and Jenkinsfile for the `emailservice` service.
-- `frontend`: Contains the code and Jenkinsfile for the `frontend` service.
-- `infra-steps`: Contains the  deployment.yaml and Jenkinsfile. This is where we can run updates for ArgoCD to identify changes the deployment (image tag/version)
-- `loadgenerator`: Contains the code and Jenkinsfile for the `loadgenerator` service.
-- `paymentservice`: Contains the code and Jenkinsfile for the `paymentservice` service.
-- `productcatalogservice`: Contains the code and Jenkinsfile for the `productcatalogservice` service.
-- `recommendationservice`: Contains the code and Jenkinsfile for the `recommendationservice` service.
-- `shippingservice`: Contains the code and Jenkinsfile for the `shippingservice` service.
+- `adservice`: Contains the code **(Java)** and Jenkinsfile for the `adservice` service.
+- `cartservice`: Contains the code **(C#)** and Jenkinsfile for the `cartservice` service.
+- `checkoutservice`: Contains the code **(Go)** and Jenkinsfile for the `checkoutservice` service.
+- `currencyservice`: Contains the code **(NodeJS)** and Jenkinsfile for the `currencyservice` service.
+- `emailservice`: Contains the code **(Python)** and Jenkinsfile for the `emailservice` service.
+- `frontend`: Contains the code **(Go)** and Jenkinsfile for the `frontend` service.
+- `infra-steps`: Contains the deploymentservices.yaml and Jenkinsfile. This branch is used to contain changes the deployment (image tag/version) and sync the versions into kubernetes clusters.
+- `loadgenerator`: Contains the code **(Python)** and Jenkinsfile for the `loadgenerator` service.
+- `paymentservice`: Contains the code **(NodeJS)** and Jenkinsfile for the `paymentservice` service.
+- `productcatalogservice`: Contains the code **(Go)** and Jenkinsfile for the `productcatalogservice` service.
+- `recommendationservice`: Contains the code **(Python)** and Jenkinsfile for the `recommendationservice` service.
+- `shippingservice`: Contains the code **(Go)** and Jenkinsfile for the `shippingservice` service.
 
 #### Example Jenkinsfile
 
@@ -107,7 +161,7 @@ pipeline {
             }}
         // stage('Format Code') {steps {sh "./gradlew googleJavaFormat"}} // FORMATTING NOT WORKING (GOOGLE FORMAT FAILS)
         stage('Gradle Build') {steps {sh "./gradlew build"}}
-        // stage('Gradle Test') {steps {sh "./gradlew test"}} // There are no tests in the java branch currently 
+        stage('Gradle Test') {steps {sh "./gradlew test"}}
         stage('Trivy FS Scan') {steps {sh "trivy fs --format table -o fs.html ." }}       
         stage('Build & Tag Docker Image') { 
             steps {script { 
@@ -180,7 +234,7 @@ pipeline {
 - **Aqua Trivy**:
   - Scans Docker images and source code for vulnerabilities, ensuring that potential security issues are caught before deployment.
   - Generates detailed reports that can be used to address vulnerabilities promptly.
-  ![Trivy Scan](docs/img/defaultImage.png)
+  ![Trivy Scan](docs/img/jenkins-trivy-scan.png)
 
 #### D. **Containerization**
 
@@ -205,21 +259,39 @@ pipeline {
 - **EKS Networking**
   ![EKS Cluster Image](docs/img/EKS-Networking.png)
 
+<!-- REMOVE WHEN ARGO IS WORKING
+#### F. **GtiOps with ArgoCD**
+
+- **Argo Dashboard**
+  ![Argo Dashboard](docs/img/argo-dashboard.png)
+
+- **Argo Sync**
+  ![Argo Dashboard](docs/img/argo-sync.png)
+
+- **Argo Updates**
+  ![Argo Updates](docs/img/argo-updates.png)
+
+- **Argo Rollback**
+  ![Argo Rollback](docs/img/argo-rollback.png)
+-->
+
+<!-- REMOVE WHEN Monitoring IS WORKING
 #### F. **Monitoring and Observability**
 
 - **Prometheus**:
   - Collects metrics from various components of the application and infrastructure, providing deep insights into system health and performance.
   - Supports custom queries to detect anomalies and trigger alerts proactively.
-
-  ![Prometheus Image](docs/img/Prometheus.png)
+  ![Prometheus Image](docs/img/defaultImage.png)
 
 - **Grafana**:
   - Provides user-friendly dashboards for visualizing Prometheus metrics.
   - Enables stakeholders to monitor key performance indicators (KPIs) in real-time, ensuring system reliability.
+  ![Grafana Image](docs/img/defaultImage.png)
 
-  ![Grafana Image](docs/img/Grafana.png)
+  *Callout Area*: Include snapshots of Grafana dashboards and Prometheus query outputs, demonstrating the observability aspect of the pipeline.
+-->
 
-#### G. **Infrastructure as Code (IaC)**
+#### F. **Infrastructure as Code (IaC)**
 
 - **Terraform**:
   - Automates the provisioning and management of infrastructure required for the Kubernetes stack that hosts the Java application.
@@ -237,7 +309,7 @@ pipeline {
 
 ##### Terraform Examples
 
-Commands used with the main.tf to deploy the EKS infrastructure
+Commands used with the `main.tf` to deploy the EKS infrastructure
 
 ``` bash 
 terraform plan 
@@ -250,7 +322,7 @@ terraform plan
 ![Terraform Apply](docs/img/TerraformApply.png)
 ![Terraform Output](docs/img/Terraform-Output.png)
 
-#### H. **AWS Integration**
+#### G. **AWS Integration**
 
 - **EC2**:
   - Used to house the servers that control the CI/CD process and handles the actions
