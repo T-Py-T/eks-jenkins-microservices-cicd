@@ -1,4 +1,14 @@
-.github
+#Ignore in progress items
+**/todo/* 
+
+# Ignore github pipeline files
+.github/
+
+#IDE Ignore section
+.vscode/
+.cursor/
+.idea/
+.vimrc/
 
 
 .DS_Store
