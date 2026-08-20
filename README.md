@@ -1,10 +1,57 @@
-# AWS Devops/Kubernetes microservice CI/CD
+# Repeatable EKS Delivery with Jenkins
 
--This project is using an example microservices demo (Google Cloud) with the link shown below.
+This case study shows how I build a repeatable delivery path for a polyglot
+microservice system on Amazon EKS. The workload is Google Cloud's public
+[Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo);
+my work is the delivery system around it: service-specific Jenkins pipelines,
+container and source scanning, image promotion, Kubernetes deployment,
+Terraform-backed infrastructure, and retained operating screenshots.
 
-> **My DevOps Scripting Examples**
-    - Re-usable examples Terraform, Bash scripts and other scripting
-      - https://github.com/T-Py-T/devops-install-scripts
+## The so-what
+
+A microservice demo is only useful to a platform team when it can exercise the
+same controls as a real workload. This repository uses eleven services in
+different languages to answer a concrete engineering question:
+
+**Can each service be built and promoted independently without losing a common
+security, versioning, and deployment contract?**
+
+The design demonstrates:
+
+- one pipeline boundary per service and language toolchain;
+- immutable image tags derived from build numbers;
+- filesystem and container-image scanning before promotion;
+- a separate infrastructure branch that records deployable image versions;
+- EKS infrastructure and networking provisioned through reusable Terraform;
+- Prometheus and Grafana evidence captured from the running environment.
+
+## Ownership and evidence boundary
+
+| Area | Source | What this repository demonstrates |
+| --- | --- | --- |
+| Application services | Upstream Online Boutique | A realistic polyglot workload; not claimed as original application code |
+| Jenkins pipelines | Taylor-authored integration | Build, test, scan, publish, and deployment orchestration per service |
+| AWS infrastructure | Taylor-authored Terraform and setup | EKS, network, node, and access-path decisions |
+| Deployment state | Taylor-authored manifests and pipeline flow | Version promotion through a dedicated infrastructure branch |
+| Operating evidence | Retained screenshots | EKS, Terraform, Jenkins, Trivy, Prometheus, Grafana, and the deployed storefront |
+
+## Inspect the proof
+
+- [CI/CD architecture](docs/img/CICD-EKS-Architechture.png)
+- [Jenkins multibranch configuration](docs/img/jenkins-multibranch.png)
+- [Service pipeline run](docs/img/jenkins-adservice-pipeline.png)
+- [Trivy scan](docs/img/jenkins-trivy-scan.png)
+- [EKS cluster and nodes](docs/img/EKS-Cluster.png)
+- [Prometheus](docs/img/Prometheus.png) and [Grafana](docs/img/Grafana.png)
+- [Reusable deployment scripts](https://github.com/T-Py-T/devops-install-scripts)
+
+## Scope
+
+This is a retained deployment case study, not a currently operated production
+service. Screenshots prove that the documented path was exercised; they do not
+establish present uptime, current vulnerability status, or ongoing traffic.
+The next improvement is to turn the retained build and deployment checks into
+a current, reproducible validation packet.
 
 ## Application overview
 
@@ -22,21 +69,23 @@ Each of the 11 microservices written in different languages that talk to each ot
 
 [![Architecture of microservices](/docs/img/architecture-diagram.png)](/docs/img/architecture-diagram.png)
 
-Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
+Each service and its Jenkinsfile is retained on a dedicated branch. The main
+branch is the architecture and evidence index rather than a duplicate copy of
+every upstream service.
 
 | Service | Language |   Description     |
 | -------| --------| -------- |
-| [frontend](/src/frontend) | Go    | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. |
-| [cartservice](/src/cartservice) | C#  | Stores the items in the user's shopping cart in Redis and retrieves it.   |
-| [productcatalogservice](/src/productcatalogservice) | Go   | Provides the list of products from a JSON file and ability to search products and get individual products.  |
-| [currencyservice](/src/currencyservice) | Node.js   | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. |
-| [paymentservice](/src/paymentservice)  | Node.js       | Charges the given credit card info (mock) with the given amount and returns a transaction ID.                                     |
-| [shippingservice](/src/shippingservice)             | Go            | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)                                 |
-| [emailservice](/src/emailservice)                   | Python        | Sends users an order confirmation email (mock).                                                                                   |
-| [checkoutservice](/src/checkoutservice)             | Go            | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.                            |
-| [recommendationservice](/src/recommendationservice) | Python        | Recommends other products based on what's given in the cart.                                                                      |
-| [adservice](/src/adservice)                         | Java          | Provides text ads based on given context words.                                                                                   |
-| [loadgenerator](/src/loadgenerator)                 | Python/Locust | Continuously sends requests imitating realistic user shopping flows to the frontend.     |
+| [frontend](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/frontend) | Go | Composes the web experience and downstream service calls. |
+| [cartservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/cartservice) | C# | Stores and retrieves shopping-cart state through Redis. |
+| [productcatalogservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/productcatalogservice) | Go | Lists and searches the product catalog. |
+| [currencyservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/currencyservice) | Node.js | Converts prices between supported currencies. |
+| [paymentservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/paymentservice) | Node.js | Simulates payment processing. |
+| [shippingservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/shippingservice) | Go | Produces shipping estimates. |
+| [emailservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/emailservice) | Python | Simulates order-confirmation email. |
+| [checkoutservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/checkoutservice) | Go | Orchestrates cart, payment, shipping, and email calls. |
+| [recommendationservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/recommendationservice) | Python | Produces product recommendations. |
+| [adservice](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/adservice) | Java | Serves context-based ads. |
+| [loadgenerator](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/tree/loadgenerator) | Python/Locust | Sends synthetic traffic to the frontend. |
 
 ### Screenshots
 
@@ -46,7 +95,7 @@ Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
 
 ## Features
 
-- **[Kubernetes](https://kubernetes.io)/[EKS]():**
+- **[Kubernetes](https://kubernetes.io)/[EKS](https://aws.amazon.com/eks/):**
   The app is designed to run on Kubernetes (both locally on "Docker for Desktop", as well as on the cloud with EKS).
 - **[gRPC](https://grpc.io):** Microservices use a high volume of gRPC calls to communicate to each other.
 - **Synthetic Load Generation:** The application demo comes with a background job that creates realistic usage patterns on the website using [Locust](https://locust.io/) load generator.
@@ -251,7 +300,7 @@ pipeline {
 
 - **Elastic Kubernetes Service (EKS)**:
   - Manages the deployment and scaling of containerized applications in a highly available environment.
-  - Ensures zero downtime by automatically scaling and redistributing workloads as needed.
+  - Supports horizontal scaling and rolling replacement; availability still depends on workload replicas, disruption budgets, and tested probes.
   - Namespace configurations (e.g., `webapps` and `namespace 2`) isolate different parts of the system for better organization and security. The second namespace is not currently used, but is planned for a similar python web app
   - The configuration for EKS was update from the terraform **main.tf** listed in the [devops-install-scripts](https://github.com/T-Py-T/devops-install-scripts) repo and shown implemented below in a later section.
 
