@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters {
+        booleanParam(
+            name: 'APPLY',
+            defaultValue: false,
+            description: 'Apply the validated manifest to the configured cluster'
+        )
+        string(name: 'KUBE_CREDENTIALS_ID', defaultValue: 'k8-cred')
+        string(name: 'NAMESPACE', defaultValue: 'webapps')
+    }
+
+    environment {
+        RESOLVED_MANIFEST = '.jenkins/deployment-service.resolved.yml'
+    }
+
+    stages {
+        stage('Validate manifest') {
+            steps {
+                sh 'go run github.com/yannh/kubeconform/cmd/kubeconform@v0.8.0 -strict -summary deploy/eks/deployment-service.yml'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            when {
+                expression { params.APPLY }
+            }
+            steps {
+                script {
+                    sh 'python3 scripts/pin_manifest_images.py --input deploy/eks/deployment-service.yml --output "$RESOLVED_MANIFEST"'
+                    sh 'go run github.com/yannh/kubeconform/cmd/kubeconform@v0.8.0 -strict -summary "$RESOLVED_MANIFEST"'
+                    withKubeConfig([
+                        credentialsId: params.KUBE_CREDENTIALS_ID,
+                        namespace: params.NAMESPACE,
+                        restrictKubeConfigAccess: true
+                    ]) {
+                        sh 'kubectl apply -f "$RESOLVED_MANIFEST"'
+                        sh 'kubectl rollout status deployment/frontend --namespace "$NAMESPACE"'
+                        sh 'kubectl get pods,svc --namespace "$NAMESPACE"'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'rm -f "$RESOLVED_MANIFEST"'
+        }
+    }
+}

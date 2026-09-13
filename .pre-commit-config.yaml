@@ -1,0 +1,8 @@
+repos:
+  - repo: local
+    hooks:
+      - id: repository-policy
+        name: repository policy
+        entry: python3 -m unittest tests.test_repository_policy tests.test_pin_manifest_images
+        language: system
+        pass_filenames: false
