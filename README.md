@@ -1,5 +1,8 @@
 # EKS Microservices Delivery with Jenkins
 
+[![PR Checks](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/actions/workflows/pr-checks.yml/badge.svg?branch=main)](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/actions/workflows/pr-checks.yml)
+
+
 A Jenkins and Amazon EKS delivery example built around
 [Google Cloud's Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo),
 an e-commerce application composed of eleven services written in Java, C#,
