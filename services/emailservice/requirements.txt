@@ -8,7 +8,7 @@ charset-normalizer==3.5.1
     # via requests
 cryptography==50.0.1
     # via google-auth
-google-api-core==2.36.0
+google-api-core[grpc]==2.36.0
     # via
     #   -r requirements.in
     #   google-cloud-trace
@@ -23,7 +23,7 @@ googleapis-common-protos==1.75.3
     #   google-api-core
     #   grpcio-status
     #   opentelemetry-exporter-otlp-proto-grpc
-grpcio==1.83.1
+grpcio==1.84.0
     # via
     #   -r requirements.in
     #   google-api-core
