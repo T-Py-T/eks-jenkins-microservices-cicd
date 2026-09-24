@@ -1,5 +1,7 @@
 # Contributing
 
+> Tip-cite: main `a36909d7` + PR #15.
+
 Thanks for helping improve this Jenkins and Amazon EKS delivery example. Keep
 changes focused on the repository-specific pipelines, deployment manifests,
 tests, and documentation around the upstream Online Boutique application.
