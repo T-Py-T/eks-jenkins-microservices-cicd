@@ -45,7 +45,7 @@ itsdangerous==2.2.0
     # via flask
 jinja2==3.1.6
     # via flask
-locust==2.46.5
+locust==2.46.6
     # via -r requirements.in
 markupsafe==3.0.3
     # via
@@ -68,7 +68,7 @@ python-engineio==4.14.0
     # via
     #   locust
     #   python-socketio
-python-socketio==5.16.4
+python-socketio[client]==5.16.4
     # via locust
 pyzmq==27.2.0
     # via locust
