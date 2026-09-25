@@ -168,3 +168,13 @@ Repository-specific pipeline, deployment, and documentation work is available
 under the [MIT License](LICENSE). Online Boutique source files retain Google
 LLC's [Apache License 2.0](LICENSE-APACHE-2.0) notices. See
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+
+## Steward tip-cite bank
+
+For a compact citation of a merged documentation tip, use the 8-character
+`main` tip prefix and pull request number:
+
+> Tip-cite: main `<8-char-tip>` + PR #<n>.
+
+The Steward resolves the short prefix to the full SHA. This citation bank does
+not mark work READY; do not invent or infer scores.
