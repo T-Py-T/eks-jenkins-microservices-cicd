@@ -193,7 +193,9 @@ LLC's [Apache License 2.0](LICENSE-APACHE-2.0) notices. See
 
 This repository is a concrete, inspectable delivery-engineering example. It is
 not a claim of employment readiness and does not substitute for an interview or
-an evaluation rubric.
+an evaluation rubric. See [`docs/OPEN_PROBLEMS.md`](docs/OPEN_PROBLEMS.md) for the
+active evidence gaps and held decisions that bound this narrative; it is not a
+scorecard or `READY` gate.
 
 A reviewer can inspect evidence of the ability to:
 
