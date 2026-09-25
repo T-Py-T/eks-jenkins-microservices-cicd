@@ -27,6 +27,11 @@ Jenkinsfile               parameterized build, scan, and optional publish flow
 The older service-named branches are retained as project history. `main` is the
 supported, self-contained source tree.
 
+## Keep exploring
+
+- [Open problems and held decisions](docs/OPEN_PROBLEMS.md) — active status
+  inventory, not a scorecard or `READY` gate.
+
 ## Services
 
 | Service | Language | Responsibility |
@@ -200,7 +205,10 @@ outcome, or any hiring/evaluation score. No score is assigned or implied.
 For a compact citation of a merged documentation tip, use the 8-character
 `main` tip prefix and pull request number:
 
-> Tip-cite: main `<8-char-tip>` + PR #<n>.
+> Tip-cite bank:
+> - Ship 50 / PR #39: T-Py-T/eks-jenkins-microservices-cicd `025adce5`
+
+> Tip-cite: main `025adce5` + PR #39. Steward resolves; no READY claim or score is implied.
 
 The Steward resolves the short prefix to the full SHA. This citation bank does
 not mark work READY; do not invent or infer scores.
