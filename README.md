@@ -169,6 +169,32 @@ under the [MIT License](LICENSE). Online Boutique source files retain Google
 LLC's [Apache License 2.0](LICENSE-APACHE-2.0) notices. See
 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
+## Hireability / what this proves
+
+This repository is a concrete, inspectable delivery-engineering example. It is
+not a claim of employment readiness and does not substitute for an interview or
+an evaluation rubric.
+
+A reviewer can inspect evidence of the ability to:
+
+- work across an eleven-service application spanning Go, C#, Node.js, Python,
+  Java, and Locust;
+- design a parameterized Jenkins path that tests and audits a selected service,
+  scans source and the resulting image, builds a container, and keeps image
+  publishing explicitly optional;
+- separate build and deployment concerns, validate Kubernetes resources, pin
+  registry tags to digests, and require an explicit `APPLY=true` before cluster
+  changes;
+- document repeatable local checks for pre-commit, service tests, dependency
+  audits, manifest conformance, and an isolated integration smoke test; and
+- keep registry, AWS, and Kubernetes credentials in Jenkins rather than in the
+  repository.
+
+What this proves is limited to the engineering decisions and repeatable checks
+that this repository documents and that a reviewer can inspect or run. It does
+not prove production uptime, capacity, security certification, a live-cluster
+outcome, or any hiring/evaluation score. No score is assigned or implied.
+
 ## Steward tip-cite bank
 
 For a compact citation of a merged documentation tip, use the 8-character
@@ -178,3 +204,7 @@ For a compact citation of a merged documentation tip, use the 8-character
 
 The Steward resolves the short prefix to the full SHA. This citation bank does
 not mark work READY; do not invent or infer scores.
+
+---
+
+> Tip-cite: main `<8-char-tip>` + PR #<n>. Steward resolves; no READY claim or score is implied.
