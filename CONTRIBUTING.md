@@ -1,6 +1,6 @@
 # Contributing
 
-> Tip-cite: main `4d8f0b45` + this PR. Steward resolves; no `READY` claim or score is implied.
+> Tip-cite: main `4d8f0b45` + PR #40. Steward resolves; no `READY` claim or score is implied.
 
 Thanks for helping improve this Jenkins and Amazon EKS delivery example. Keep
 changes focused on the repository-specific pipelines, deployment manifests,
