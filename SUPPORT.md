@@ -1,6 +1,6 @@
 # Support
 
-> Tip-cite: main `23c1626` + PR #<n>. Steward resolves after merge; no READY claim.
+> Tip-cite: main `23c1626` + PR #43. Steward resolves after merge; no READY claim.
 
 This repository is a Jenkins and Amazon EKS microservices delivery example, not a
 hosted service. Support is limited to the repository's documented pipelines,
