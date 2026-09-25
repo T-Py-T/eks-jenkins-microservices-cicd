@@ -1,5 +1,7 @@
 # Open problems and held decisions
 
+> Tip-cite: base main `80f8a882` + PR #48. Steward resolves after merge; this pointer is not approval and never `READY`.
+
 **Status:** active inventory. This page is a docs record, not a scorecard,
 acceptance gate, release declaration, or `READY` claim.
 
