@@ -1,6 +1,6 @@
 # Security policy
 
-> Tip-cite: base main `80f8a882` + PR #48. Steward resolves after merge; this pointer is not approval and never `READY`.
+> Tip-cite: base main `99d44e91` + PR #TBD. Steward resolves after merge; this pointer is not approval and never `READY`.
 
 ## Supported code
 
