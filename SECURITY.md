@@ -1,6 +1,6 @@
 # Security policy
 
-> Tip-cite: main `92aaeaa4` + PR #42. Steward resolves; never READY.
+> Tip-cite: main `80f8a882` + PR #N. Steward resolves; never READY.
 
 ## Supported code
 
