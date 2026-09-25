@@ -1,10 +1,18 @@
 # Contributing
 
-> Tip-cite: main `a36909d7` + PR #15.
+> Tip-cite: main `4d8f0b45` + this PR. Steward resolves; no `READY` claim or score is implied.
 
 Thanks for helping improve this Jenkins and Amazon EKS delivery example. Keep
 changes focused on the repository-specific pipelines, deployment manifests,
 tests, and documentation around the upstream Online Boutique application.
+
+## Repository context
+
+- Review the [open problems and held decisions](docs/OPEN_PROBLEMS.md) for the
+  active evidence boundaries and operational items that remain unresolved.
+- See the README [hireability and evidence section](README.md#hireability--what-this-proves)
+  for the concrete capabilities this repository documents and its explicit
+  non-claims.
 
 ## Before opening a pull request
 
