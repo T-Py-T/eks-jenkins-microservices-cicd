@@ -1,5 +1,7 @@
 # Security policy
 
+> Tip-cite: main `92aaeaa4` + PR #42. Steward resolves; never READY.
+
 ## Supported code
 
 The current `main` branch is the only supported version. This repository is an EKS Jenkins microservices CI/CD lab for local and lab infrastructure; it does not operate a hosted service.
@@ -26,3 +28,10 @@ Registry, AWS, and Kubernetes credentials belong in Jenkins or your local enviro
 The root `Jenkinsfile`, `deploy/eks/Jenkinsfile`, and local validation scripts are operator tools for building, scanning, and optionally applying manifests on infrastructure you control. They do not certify third-party container images, cloud providers, or generated artifacts as secure.
 
 The GitHub pull-request workflow and local `pre-commit` checks use dependency audits, service tests, and manifest validation. Local and CI checks do not certify a Jenkins agent, EKS cluster, container image, or generated change as secure.
+
+## Evidence boundaries
+
+The [open problems and held decisions](docs/OPEN_PROBLEMS.md) inventory records
+active evidence gaps and held decisions; it is not a scorecard, `READY` gate,
+or security certification. This policy makes no `READY` claim and does not
+infer live security evidence from repository artifacts.
