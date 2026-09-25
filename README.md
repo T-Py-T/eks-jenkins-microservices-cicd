@@ -14,6 +14,21 @@ one service, then deploy an explicitly selected manifest.
 
 ![Jenkins and EKS delivery architecture](docs/img/CICD-EKS-Architechture.png)
 
+## Architecture and evidence path
+
+The architecture image is a map of the repository's inspectable delivery path: the
+service source and tests feed the root [`Jenkinsfile`](Jenkinsfile) for a selected
+service's checks, source and image scans, build, and optional publish; the
+deployment path at [`deploy/eks/Jenkinsfile`](deploy/eks/Jenkinsfile) validates and
+resolves the selected EKS manifest before an operator-controlled apply. Review the
+[delivery flow](#delivery-flow), [local validation](#local-validation), and
+[EKS deployment](#eks-deployment) sections together when tracing that path. These
+repository paths describe what an authorized operator can inspect or exercise;
+they do not prove that Jenkins, a registry, or an EKS cluster has run successfully.
+Live run, scan, rollout, and authentication evidence must come from the authorized
+environment and is not inferred from this README. This is not a `READY` claim,
+score, or production outcome.
+
 ## Repository layout
 
 ```text
@@ -206,9 +221,10 @@ For a compact citation of a merged documentation tip, use the 8-character
 `main` tip prefix and pull request number:
 
 > Tip-cite bank:
+> - Ship 91 / PR #73: T-Py-T/eks-jenkins-microservices-cicd `a75013c4`
 > - Ship 50 / PR #39: T-Py-T/eks-jenkins-microservices-cicd `025adce5`
 
-> Tip-cite: main `025adce5` + PR #39. Steward resolves; no READY claim or score is implied.
+> Tip-cite: main `a75013c4` + PR #73. Steward resolves; no READY claim or score is implied.
 
 The Steward resolves the short prefix to the full SHA. This citation bank does
 not mark work READY; do not invent or infer scores.
