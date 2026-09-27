@@ -44,6 +44,7 @@ supported, self-contained source tree.
 
 ## Keep exploring
 
+- [Maintainers](MAINTAINERS.md) — factual owner and stewardship pointers; not a scorecard or `READY` gate.
 - [Roadmap](ROADMAP.md) — planned evidence-backed work; not a scorecard or `READY` gate.
 - [Open problems and held decisions](docs/OPEN_PROBLEMS.md) — active status
   inventory, not a scorecard or `READY` gate.
