@@ -1,6 +1,6 @@
 # Documentation index
 
-> Tip-cite bank: base main `9fbea38c` + this PR pending Steward; provenance only; never `READY`.
+> Tip-cite bank: base main `e332a86` + this PR pending Steward; provenance only; never `READY`.
 
 **Status:** index page. This directory collects supporting documentation for the
 repository. It is not a scorecard, readiness declaration, or invented score.
@@ -27,6 +27,7 @@ they exist in this repository:
 | CODEOWNERS | [`.github/CODEOWNERS`](../.github/CODEOWNERS) | Review routing; not a scorecard. |
 | Funding | [`.github/FUNDING.yml`](../.github/FUNDING.yml) | Sponsorship pointer; not a `READY` gate. |
 | Roadmap | [`ROADMAP.md`](../ROADMAP.md) | Planned evidence-backed work; not a release declaration. |
+| Pull request template | [`.github/PULL_REQUEST_TEMPLATE.md`](../.github/PULL_REQUEST_TEMPLATE.md) | PR scaffold; not a `READY` gate. |
 
 ## In this directory
 
