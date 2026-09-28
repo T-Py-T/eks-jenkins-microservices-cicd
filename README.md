@@ -45,6 +45,7 @@ supported, self-contained source tree.
 ## Keep exploring
 
 - [Documentation index](docs/README.md) — purpose of `/docs` and links to repository documents; not a scorecard or `READY` gate.
+- [Pull request template](.github/PULL_REQUEST_TEMPLATE.md) — PR summary, validation, and tip-cite scaffold; not a scorecard or `READY` gate.
 - [Notice](NOTICE.md) — attribution and provenance pointers; not a scorecard or `READY` gate.
 - [Funding](.github/FUNDING.yml) — sponsorship pointer; not a scorecard or `READY` gate.
 - [CODEOWNERS](.github/CODEOWNERS) — review routing and provenance pointers; not a scorecard or `READY` gate.

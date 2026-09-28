@@ -1,3 +1,6 @@
+<!-- tip-cite bank: base main e332a86 + this PR pending Steward; provenance only; never READY. -->
+<!-- Pair note: mirrors aks-ado Ship227; provenance only. -->
+
 # Pull request
 
 <!-- Keep the change focused and do not invent readiness claims. -->
