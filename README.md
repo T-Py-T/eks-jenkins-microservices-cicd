@@ -12,6 +12,11 @@ The default branch contains the complete application, its EKS manifest, local
 validation tools, and two deliberately separate Jenkins paths: build and scan
 one service, then deploy an explicitly selected manifest.
 
+**Stack:** Jenkins · Trivy · EKS/`kubectl` · optional Terraform · eleven-service Online Boutique.
+**Discoverability:** hireability summary, suggested GitHub topics, and license pointers live in
+[docs/HIREABILITY.md](docs/HIREABILITY.md). Cross-links: [SECURITY](SECURITY.md),
+[CONTRIBUTING](CONTRIBUTING.md), [LICENSE](LICENSE).
+
 ![Jenkins and EKS delivery architecture](docs/img/CICD-EKS-Architechture.png)
 
 ## Architecture and evidence path
@@ -44,7 +49,10 @@ supported, self-contained source tree.
 
 ## Keep exploring
 
+- [Hireability and discoverability](docs/HIREABILITY.md) — staffing-oriented evidence map and topics; not a scorecard or `READY` gate.
 - [Documentation index](docs/README.md) — purpose of `/docs` and links to repository documents; not a scorecard or `READY` gate.
+- [Security](SECURITY.md) — vulnerability reporting; not a scorecard or `READY` gate.
+- [Contributing](CONTRIBUTING.md) — contribution and tip-cite rules; not a scorecard or `READY` gate.
 - [Pull request template](.github/PULL_REQUEST_TEMPLATE.md) — PR summary, validation, and tip-cite scaffold; not a scorecard or `READY` gate.
 - [Notice](NOTICE.md) — attribution and provenance pointers; not a scorecard or `READY` gate.
 - [Funding](.github/FUNDING.yml) — sponsorship pointer; not a scorecard or `READY` gate.
@@ -198,31 +206,9 @@ LLC's [Apache License 2.0](LICENSE-APACHE-2.0) notices. See
 
 ## Hireability / what this proves
 
-This repository is a concrete, inspectable delivery-engineering example. It is
-not a claim of employment readiness and does not substitute for an interview or
-an evaluation rubric. See [`docs/OPEN_PROBLEMS.md`](docs/OPEN_PROBLEMS.md) for the
-active evidence gaps and held decisions that bound this narrative; it is not a
-scorecard or `READY` gate.
-
-A reviewer can inspect evidence of the ability to:
-
-- work across an eleven-service application spanning Go, C#, Node.js, Python,
-  Java, and Locust;
-- design a parameterized Jenkins path that tests and audits a selected service,
-  scans source and the resulting image, builds a container, and keeps image
-  publishing explicitly optional;
-- separate build and deployment concerns, validate Kubernetes resources, pin
-  registry tags to digests, and require an explicit `APPLY=true` before cluster
-  changes;
-- document repeatable local checks for pre-commit, service tests, dependency
-  audits, manifest conformance, and an isolated integration smoke test; and
-- keep registry, AWS, and Kubernetes credentials in Jenkins rather than in the
-  repository.
-
-What this proves is limited to the engineering decisions and repeatable checks
-that this repository documents and that a reviewer can inspect or run. It does
-not prove production uptime, capacity, security certification, a live-cluster
-outcome, or any hiring/evaluation score. No score is assigned or implied.
+Staffing-oriented evidence map: [docs/HIREABILITY.md](docs/HIREABILITY.md)
+(inspectable delivery choices only; not `READY`). See also
+[`docs/OPEN_PROBLEMS.md`](docs/OPEN_PROBLEMS.md) for held evidence boundaries.
 
 ## Steward tip-cite bank
 
@@ -230,14 +216,11 @@ For a compact citation of a merged documentation tip, use the 8-character
 `main` tip prefix and pull request number:
 
 > Tip-cite bank:
-> - Ship 91 / PR #73: T-Py-T/eks-jenkins-microservices-cicd `a75013c4`
 > - Ship 50 / PR #39: T-Py-T/eks-jenkins-microservices-cicd `025adce5`
+> - Ship 91 / PR #73: T-Py-T/eks-jenkins-microservices-cicd `a75013c4`
+> - Ship 240: base main `60b2798b` + this PR pending Steward — README hireability lean
 
-> Tip-cite: main `a75013c4` + PR #73. Steward resolves; no READY claim or score is implied.
+> Tip-cite: main `60b2798b` + ship 240 (pending Steward). Steward resolves; no READY claim or score is implied.
 
 The Steward resolves the short prefix to the full SHA. This citation bank does
 not mark work READY; do not invent or infer scores.
-
----
-
-> Tip-cite: main `<8-char-tip>` + PR #<n>. Steward resolves; no READY claim or score is implied.
