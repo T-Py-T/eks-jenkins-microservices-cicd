@@ -1,6 +1,6 @@
 # Documentation index
 
-> Tip-cite bank: base main `e332a86` + this PR pending Steward; provenance only; never `READY`.
+> Tip-cite bank: base main `9374c43a` + Ship 244 pending Steward resolve; provenance only; never `READY`.
 
 **Status:** index page. This directory collects supporting documentation for the
 repository. It is not a scorecard, readiness declaration, or invented score.

@@ -1,6 +1,6 @@
 # Security policy
 
-> Tip-cite: base main `99d44e91` + PR #49. Steward resolves after merge; this pointer is not approval and never `READY`.
+> Tip-cite: base main `9374c43a` + this PR pending Steward resolve. This pointer is not approval and never `READY`.
 
 ## Supported code
 
@@ -35,3 +35,13 @@ The [open problems and held decisions](docs/OPEN_PROBLEMS.md) inventory records
 active evidence gaps and held decisions; it is not a scorecard, `READY` gate,
 or security certification. This policy makes no `READY` claim and does not
 infer live security evidence from repository artifacts.
+
+## Related documents
+
+- [CONTRIBUTING.md](CONTRIBUTING.md) — contribution guidance; use
+  [Report a vulnerability](#report-a-vulnerability) for security issues instead
+  of public issues.
+- [LICENSE](LICENSE) — MIT terms for repository-specific work; upstream notices
+  in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- [Documentation index](docs/README.md) and [README: Keep exploring](README.md#keep-exploring)
+  — navigation to other repository documents; not a `READY` gate.
