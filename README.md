@@ -202,7 +202,9 @@ available in [`docs/img/`](docs/img).
 Repository-specific pipeline, deployment, and documentation work is available
 under the [MIT License](LICENSE). Online Boutique source files retain Google
 LLC's [Apache License 2.0](LICENSE-APACHE-2.0) notices. See
-[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). For vulnerability reporting
+see [SECURITY.md](SECURITY.md); for contribution expectations see
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Hireability / what this proves
 
@@ -218,9 +220,10 @@ For a compact citation of a merged documentation tip, use the 8-character
 > Tip-cite bank:
 > - Ship 50 / PR #39: T-Py-T/eks-jenkins-microservices-cicd `025adce5`
 > - Ship 91 / PR #73: T-Py-T/eks-jenkins-microservices-cicd `a75013c4`
-> - Ship 240 / PR #65: base main `60b2798b` + this PR pending Steward — README hireability lean (pair aks Ship 239)
+> - Ship 240 / PR #65: base main `60b2798b` + PR pending Steward — README hireability lean (pair aks Ship 239)
+> - Ship 244: base main `9374c43a` + this PR pending Steward — README/SECURITY/CONTRIBUTING discoverability lean (pair aks Ship 243)
 
-> Tip-cite: main `60b2798b` + PR #65 (pending Steward). Steward resolves; no READY claim or score is implied.
+> Tip-cite: main `9374c43a` + this PR pending Steward. Steward resolves; no READY claim or score is implied.
 
 The Steward resolves the short prefix to the full SHA. This citation bank does
 not mark work READY; do not invent or infer scores.
