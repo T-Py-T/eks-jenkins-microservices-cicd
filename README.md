@@ -218,9 +218,9 @@ For a compact citation of a merged documentation tip, use the 8-character
 > Tip-cite bank:
 > - Ship 50 / PR #39: T-Py-T/eks-jenkins-microservices-cicd `025adce5`
 > - Ship 91 / PR #73: T-Py-T/eks-jenkins-microservices-cicd `a75013c4`
-> - Ship 240: base main `60b2798b` + this PR pending Steward — README hireability lean (pair aks Ship 239)
+> - Ship 240 / PR #65: base main `60b2798b` + this PR pending Steward — README hireability lean (pair aks Ship 239)
 
-> Tip-cite: main `60b2798b` + this PR pending Steward. Steward resolves; no READY claim or score is implied.
+> Tip-cite: main `60b2798b` + PR #65 (pending Steward). Steward resolves; no READY claim or score is implied.
 
 The Steward resolves the short prefix to the full SHA. This citation bank does
 not mark work READY; do not invent or infer scores.

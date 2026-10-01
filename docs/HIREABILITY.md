@@ -1,6 +1,6 @@
 # Hireability and discoverability
 
-> Tip-cite bank: base main `60b2798b` + this PR pending Steward; paired with aks-ado Ship 239;
+> Tip-cite bank: base main `60b2798b` + PR #65 pending Steward; paired with aks-ado Ship 239;
 > provenance only; never `READY`.
 
 Pair note: mirrors aks-ado Ship 239 hireability lean; provenance only.
