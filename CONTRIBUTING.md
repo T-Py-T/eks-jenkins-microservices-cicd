@@ -10,8 +10,8 @@ tests, and documentation around the upstream Online Boutique application.
 
 - Review the [open problems and held decisions](docs/OPEN_PROBLEMS.md) for the
   active evidence boundaries and operational items that remain unresolved.
-- See [docs/HIREABILITY.md](docs/HIREABILITY.md) and the README
-  [hireability section](README.md#hireability--what-this-proves) for inspectable
+- See the README
+  [What this proves](README.md#what-this-proves) for inspectable
   delivery evidence and explicit non-claims.
 - [Security policy](SECURITY.md) — report vulnerabilities privately; do not open
   public issues for unpatched security flaws.

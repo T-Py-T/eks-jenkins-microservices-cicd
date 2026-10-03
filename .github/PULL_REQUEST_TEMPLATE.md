@@ -1,4 +1,3 @@
-<!-- tip-cite bank: base main 3a52a27 + this PR pending Steward; provenance only; never READY. -->
 <!-- Pair note: Ship 288 — dependabot.yml already substantial on main; PR-template tip-cite + wayfinder only; provenance only. -->
 
 # Pull request

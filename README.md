@@ -13,8 +13,7 @@ validation tools, and two deliberately separate Jenkins paths: build and scan
 one service, then deploy an explicitly selected manifest.
 
 **Stack:** Jenkins · Trivy · EKS/`kubectl` · optional Terraform · eleven-service Online Boutique.
-**Discoverability:** hireability summary, suggested GitHub topics, and license pointers live in
-[docs/HIREABILITY.md](docs/HIREABILITY.md). Cross-links: [SECURITY](SECURITY.md),
+Cross-links: [SECURITY](SECURITY.md),
 [CONTRIBUTING](CONTRIBUTING.md), [LICENSE](LICENSE).
 
 ![Jenkins and EKS delivery architecture](docs/img/CICD-EKS-Architechture.png)
@@ -49,7 +48,6 @@ supported, self-contained source tree.
 
 ## Keep exploring
 
-- [Hireability and discoverability](docs/HIREABILITY.md) — staffing-oriented evidence map and topics; not a scorecard or `READY` gate.
 - [Documentation index](docs/README.md) — purpose of `/docs` and links to repository documents; not a scorecard or `READY` gate.
 - [Security](SECURITY.md) — vulnerability reporting; not a scorecard or `READY` gate.
 - [Contributing](CONTRIBUTING.md) — contribution and tip-cite rules; not a scorecard or `READY` gate.
@@ -206,10 +204,9 @@ LLC's [Apache License 2.0](LICENSE-APACHE-2.0) notices. See
 see [SECURITY.md](SECURITY.md); for contribution expectations see
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## Hireability / what this proves
+## What this proves
 
-Staffing-oriented evidence map: [docs/HIREABILITY.md](docs/HIREABILITY.md)
-(inspectable delivery choices only; not `READY`). See also
+See also
 [`docs/OPEN_PROBLEMS.md`](docs/OPEN_PROBLEMS.md) for held evidence boundaries.
 
 ## Steward tip-cite bank
