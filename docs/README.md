@@ -31,8 +31,6 @@ they exist in this repository:
 
 ## In this directory
 
-- [`HIREABILITY.md`](HIREABILITY.md) — staffing-oriented evidence map, topics, and license pointers;
-  not a scorecard or `READY` gate.
 - [`OPEN_PROBLEMS.md`](OPEN_PROBLEMS.md) — active evidence gaps and held decisions;
   not a scorecard or `READY` gate.
 
