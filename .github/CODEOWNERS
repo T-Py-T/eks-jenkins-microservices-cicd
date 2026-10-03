@@ -1,2 +1,4 @@
-# tip-cite bank: base main 1f8e070f + this PR pending Steward; provenance only; never READY.
+# tip-cite bank: base main 62a7399 + this PR pending Steward; provenance only; never READY.
+# Pair note: Ship 292 (starve-fill 285–292) — CODEOWNERS tip-cite lean; Ship 288 / PR #82 took PR-template fallback; provenance only.
 * @T-Py-T
+# Tip-cite protocol and stewardship boundaries: GOVERNANCE.md. PR scaffold and Dependabot wayfinder: .github/PULL_REQUEST_TEMPLATE.md.
