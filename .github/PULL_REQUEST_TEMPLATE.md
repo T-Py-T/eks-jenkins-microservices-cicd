@@ -1,5 +1,5 @@
-<!-- tip-cite bank: base main e332a86 + this PR pending Steward; provenance only; never READY. -->
-<!-- Pair note: mirrors aks-ado Ship227; provenance only. -->
+<!-- tip-cite bank: base main 3a52a27 + this PR pending Steward; provenance only; never READY. -->
+<!-- Pair note: Ship 288 — dependabot.yml already substantial on main; PR-template tip-cite + wayfinder only; provenance only. -->
 
 # Pull request
 
@@ -18,3 +18,5 @@
 Base `main` tip: `<8+ hex commit>` + PR #`<number>`.
 
 Steward resolves this trace pointer after merge; it is not approval and never means `READY`.
+
+<!-- Dependency automation scope (github-actions, npm, pip, docker): [.github/dependabot.yml](.github/dependabot.yml). -->
