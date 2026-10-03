@@ -1,6 +1,6 @@
 # Contributing
 
-> Tip-cite: main `e3b05270` + PR #75. Steward resolves; no `READY` claim or score is implied.
+> Tip-cite: base main `9374c43a` + this PR pending Steward resolve. This pointer is not approval and never `READY`.
 
 Thanks for helping improve this Jenkins and Amazon EKS delivery example. Keep
 changes focused on the repository-specific pipelines, deployment manifests,
@@ -10,9 +10,13 @@ tests, and documentation around the upstream Online Boutique application.
 
 - Review the [open problems and held decisions](docs/OPEN_PROBLEMS.md) for the
   active evidence boundaries and operational items that remain unresolved.
-- See the README [hireability and evidence section](README.md#hireability--what-this-proves)
-  for the concrete capabilities this repository documents and its explicit
-  non-claims.
+- See [docs/HIREABILITY.md](docs/HIREABILITY.md) and the README
+  [hireability section](README.md#hireability--what-this-proves) for inspectable
+  delivery evidence and explicit non-claims.
+- [Security policy](SECURITY.md) — report vulnerabilities privately; do not open
+  public issues for unpatched security flaws.
+- [License](LICENSE) — MIT terms for repository-specific work; not a readiness
+  declaration.
 
 ## Before opening a pull request
 
