@@ -1,7 +1,5 @@
 # Security policy
 
-> Tip-cite: base main `9374c43a` + this PR pending Steward resolve. This pointer is not approval and never `READY`.
-
 ## Supported code
 
 The current `main` branch is the only supported version. This repository is an EKS Jenkins microservices CI/CD lab for local and lab infrastructure; it does not operate a hosted service.
@@ -29,12 +27,11 @@ The root `Jenkinsfile`, `deploy/eks/Jenkinsfile`, and local validation scripts a
 
 The GitHub pull-request workflow and local `pre-commit` checks use dependency audits, service tests, and manifest validation. Local and CI checks do not certify a Jenkins agent, EKS cluster, container image, or generated change as secure.
 
-## Evidence boundaries
+## Known gaps
 
 The [open problems and held decisions](docs/OPEN_PROBLEMS.md) inventory records
-active evidence gaps and held decisions; it is not a scorecard, `READY` gate,
-or security certification. This policy makes no `READY` claim and does not
-infer live security evidence from repository artifacts.
+known gaps and held decisions. It is not a security certification, and this
+policy doesn't infer live security results from repository artifacts.
 
 ## Related documents
 
@@ -43,5 +40,5 @@ infer live security evidence from repository artifacts.
   of public issues.
 - [LICENSE](LICENSE) — MIT terms for repository-specific work; upstream notices
   in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-- [Documentation index](docs/README.md) and [README: Keep exploring](README.md#keep-exploring)
-  — navigation to other repository documents; not a `READY` gate.
+- [Documentation index](docs/README.md) — navigation to other repository
+  documents.

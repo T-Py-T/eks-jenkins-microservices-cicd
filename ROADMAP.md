@@ -1,69 +1,56 @@
 # Roadmap
 
-> Tip-cite: base main `2d56d722` + PR #54. Steward resolves after merge; this pointer is not approval and never `READY`.
+Planned next steps for this Jenkins and Amazon EKS delivery example. Items come
+from the [README](README.md), [`docs/OPEN_PROBLEMS.md`](docs/OPEN_PROBLEMS.md)
+and the existing CI. Use [`CHANGELOG.md`](CHANGELOG.md) for work that has
+already landed.
 
-**Status:** planning document. This page lists intended, evidence-backed portfolio hygiene
-work. It is not a scorecard, acceptance record, release declaration, or `READY` claim.
+Finishing an item here changes the repository only. It doesn't show that a
+live Jenkins controller, registry or cluster works; that needs a run on
+infrastructure you control.
 
-This repository documents a Jenkins delivery path for an Amazon EKS-hosted microservices
-application. The items below are realistic next steps derived from
-[`README.md`](README.md), [`docs/OPEN_PROBLEMS.md`](docs/OPEN_PROBLEMS.md), and the
-existing CI documentation. Completing an item updates repository evidence only; it does
-not establish live Jenkins, registry, or cluster proof without separate operator
-receipts.
+## Status key
 
-## Baseline provenance
-
-| Field | Value |
-| --- | --- |
-| Base `main` tip | `2d56d722` |
-| Merge PR | [#54](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/pull/54) — Ship 172 CHANGELOG tip-cite |
-| Steward | Resolves the 8-character tip against `main`; no `READY` claim |
-
-Ship 172 landed [`CHANGELOG.md`](CHANGELOG.md) at this tip. Use that file for landed
-docs-ship history; use this roadmap for planned work that has not yet shipped.
+- `UNTESTED`: not implemented yet, or not re-checked on `main`.
+- `GAP`: the repository's coverage is incomplete or stale.
+- `BLOCKED-AUTH`: needs authorized Jenkins, registry, AWS or EKS access that
+  this repository doesn't have.
 
 ## Planned work
 
-Each item carries an honest status. `UNTESTED` means the work is not yet implemented or
-not yet re-validated on `main`. `GAP` means repository evidence is incomplete or
-stale. `BLOCKED-AUTH` means progress depends on authorized Jenkins, registry, AWS, or
-EKS credentials outside this repository.
-
-### Docs and tip-cite hygiene
+### Documentation
 
 | Item | Status | Notes |
 | --- | --- | --- |
-| Reconcile README tip-cite bank with current doc headers | **GAP** | README footer still lists older ship pointers; align with post–Ship 172 doc tip-cites without inventing live-run evidence. |
-| Record future docs-only ships in `CHANGELOG.md` | **UNTESTED** | Maintain the Ship 172 pattern: factual entries, tip-cite per merge, no readiness language. |
-| Refresh `docs/OPEN_PROBLEMS.md` when held boundaries change | **GAP** | Inventory should track new gaps; closing a roadmap item here is not the same as closing an open problem. |
+| Refresh `docs/OPEN_PROBLEMS.md` when held boundaries change | **GAP** | Track new gaps there. Closing a roadmap item is not the same as closing an open problem. |
+| Record future docs-only changes in `CHANGELOG.md` | **UNTESTED** | Short, factual entries. |
 
-### CI and offline validation evidence
-
-| Item | Status | Notes |
-| --- | --- | --- |
-| Document GitHub PR-check scope vs Jenkins pipeline scope | **GAP** | [`.github/workflows/pr-checks.yml`](.github/workflows/pr-checks.yml) proves offline policy, language tests, and kubeconform; root [`Jenkinsfile`](Jenkinsfile) and [`deploy/eks/Jenkinsfile`](deploy/eks/Jenkinsfile) build, scan, publish, and apply steps require authorized Jenkins execution. |
-| Extend repository policy tests when pipeline contracts change | **UNTESTED** | [`tests/test_repository_policy.py`](tests/test_repository_policy.py) guards digest pins, workflow triggers, and grype exceptions; new delivery constraints should add focused tests, not narrative claims. |
-| Keep pre-commit and PR-check commands aligned with README | **GAP** | Local validation commands in README should stay copy-paste accurate as checks evolve. |
-
-### Live delivery evidence (held outside the repo)
+### CI and offline validation
 
 | Item | Status | Notes |
 | --- | --- | --- |
-| Operator-retained Jenkins run receipt template | **BLOCKED-AUTH** | Document what an authorized run should record (build number, scan summary, optional publish tag) without asserting current pipeline success from source. |
-| EKS promotion and rollout checklist separate from build evidence | **BLOCKED-AUTH** | Per open problems: manifest review, apply authorization, and rollout observation stay operator steps; screenshots in README are illustrative, not current-state proof. |
-| 2A lane telemetry capture | **BLOCKED-AUTH / Telemetry GAP** | No invented metrics or score; telemetry remains held until an authorized environment supplies and retains receipts. |
+| Document GitHub PR-check scope vs Jenkins pipeline scope | **GAP** | [`.github/workflows/pr-checks.yml`](.github/workflows/pr-checks.yml) covers offline policy, language tests and kubeconform. The build, scan, publish and apply steps in the root [`Jenkinsfile`](Jenkinsfile) and [`deploy/eks/Jenkinsfile`](deploy/eks/Jenkinsfile) need an authorized Jenkins run. |
+| Extend repository policy tests when pipeline contracts change | **UNTESTED** | [`tests/test_repository_policy.py`](tests/test_repository_policy.py) guards digest pins, workflow triggers and grype exceptions. New delivery constraints should add focused tests. |
+| Keep pre-commit and PR-check commands aligned with the README | **GAP** | The README's local validation commands should stay copy-paste accurate as checks change. |
 
-### Portfolio alignment
+### Live delivery (outside the repository)
 
 | Item | Status | Notes |
 | --- | --- | --- |
-| Mirror portable roadmap structure for sibling AKS/Azure DevOps portfolio repo | **UNTESTED** | Keep section layout simple so aks-ado can reuse the same planning pattern without shared live-cluster claims. |
+| Template for recording an authorized Jenkins run | **BLOCKED-AUTH** | What a run should record (build number, scan summary, optional publish tag), without claiming current pipeline success from source. |
+| EKS promotion and rollout checklist, separate from build results | **BLOCKED-AUTH** | Manifest review, apply authorization and rollout observation stay operator steps. README screenshots are illustrative, not current state. |
+| Pipeline telemetry capture | **BLOCKED-AUTH** | No metrics are published until an authorized environment produces them. |
 
-## Explicit non-claims
+### Sibling repositories
 
-- No roadmap item is `READY`.
-- No score, metric, production outcome, security certification, or bake-off result is asserted.
-- No secrets, Jenkins credentials, or live cluster access are supplied or unlocked by this page.
-- No live Jenkins run, registry scan, or EKS rollout is inferred from planned work or repository artifacts.
-- Completing a docs or CI hygiene item does not close authentication or live-evidence gaps listed in [`docs/OPEN_PROBLEMS.md`](docs/OPEN_PROBLEMS.md).
+| Item | Status | Notes |
+| --- | --- | --- |
+| Share the roadmap layout with [aks-ado-microservices-cicd](https://github.com/T-Py-T/aks-ado-microservices-cicd) | **UNTESTED** | Keep the structure simple so both repos can use it without sharing live-cluster claims. |
+
+## Out of scope for this page
+
+- No score, metric, production outcome, security certification or comparison
+  result is claimed.
+- No secrets, Jenkins credentials or cluster access are provided.
+- Planned work and repository artifacts don't imply a live Jenkins run,
+  registry scan or EKS rollout.

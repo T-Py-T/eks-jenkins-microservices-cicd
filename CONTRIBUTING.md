@@ -1,22 +1,18 @@
 # Contributing
 
-> Tip-cite: base main `9374c43a` + this PR pending Steward resolve. This pointer is not approval and never `READY`.
-
 Thanks for helping improve this Jenkins and Amazon EKS delivery example. Keep
 changes focused on the repository-specific pipelines, deployment manifests,
 tests, and documentation around the upstream Online Boutique application.
 
-## Repository context
+## Useful links
 
-- Review the [open problems and held decisions](docs/OPEN_PROBLEMS.md) for the
-  active evidence boundaries and operational items that remain unresolved.
-- See the README
-  [What this proves](README.md#what-this-proves) for inspectable
-  delivery evidence and explicit non-claims.
-- [Security policy](SECURITY.md) — report vulnerabilities privately; do not open
+- [Open problems and held decisions](docs/OPEN_PROBLEMS.md): known gaps and
+  unresolved operational items that are good places to help.
+- [README: Worked path](README.md#worked-path-validate-offline-like-the-pipelines-do):
+  the offline checks a change should keep passing.
+- [Security policy](SECURITY.md): report vulnerabilities privately; don't open
   public issues for unpatched security flaws.
-- [License](LICENSE) — MIT terms for repository-specific work; not a readiness
-  declaration.
+- [License](LICENSE): MIT terms for repository-specific work.
 
 ## Before opening a pull request
 
