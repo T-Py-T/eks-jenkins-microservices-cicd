@@ -1,12 +1,10 @@
 # Changelog
 
-> Tip-cite: base `main` `9374c43a` + Ship 244 pending Steward resolve. This pointer is not approval and never `READY`.
-
 ## Unreleased
 
-- Ship 244 (starve-fill): README↔SECURITY↔CONTRIBUTING↔LICENSE discoverability
-  cross-links and tip-cite hygiene on `SECURITY.md` and `CONTRIBUTING.md`.
-  Docs-only; no `READY` claim. Pair note: lean pattern mirrors aks-ado Ship 243;
-  Jenkins/EKS lab framing only.
-- Added this changelog to record repository changes. This entry does not claim a
-  release, production validation, or readiness.
+- Rewrote the README as a product landing page: getting started, an offline
+  worked path, the build and apply pipelines, and a contributing guide.
+- Added cross-links between the README, `SECURITY.md`, `CONTRIBUTING.md` and
+  `LICENSE`.
+- Added this changelog. Entries record repository changes only; they don't
+  describe a release or a live deployment.

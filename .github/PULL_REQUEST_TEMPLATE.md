@@ -1,8 +1,6 @@
-<!-- Pair note: Ship 288 — dependabot.yml already substantial on main; PR-template tip-cite + wayfinder only; provenance only. -->
-
 # Pull request
 
-<!-- Keep the change focused and do not invent readiness claims. -->
+<!-- Keep the change focused. -->
 
 ## Summary
 
@@ -10,12 +8,11 @@
 
 ## Validation
 
-<!-- List focused checks run, or explain why validation is not applicable. -->
+<!-- List the checks you ran, or explain why validation doesn't apply. Say what you didn't run. -->
 
-## Tip-cite
+## Checklist
 
-Base `main` tip: `<8+ hex commit>` + PR #`<number>`.
-
-Steward resolves this trace pointer after merge; it is not approval and never means `READY`.
+- [ ] No AWS keys, registry passwords, kubeconfigs or Jenkins credentials in the diff
+- [ ] Docs updated if behavior, setup or pipeline stages changed
 
 <!-- Dependency automation scope (github-actions, npm, pip, docker): [.github/dependabot.yml](.github/dependabot.yml). -->
