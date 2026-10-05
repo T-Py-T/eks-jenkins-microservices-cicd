@@ -1,19 +1,24 @@
 # Governance
 
-This repository is a lab framing for Jenkins/EKS delivery examples. Repository files are not live approval, deployment evidence, or `READY` status.
+This repository is a Jenkins and Amazon EKS delivery example with a single
+owner, [@T-Py-T](https://github.com/T-Py-T) (see [MAINTAINERS.md](MAINTAINERS.md)).
 
-> Tip-cite: base `main` `e1cd85e2` + Ship 140 / this PR. Steward resolves after merge; this pointer is not approval and never `READY`.
+## How changes are made
 
-## Tip-cite protocol
+1. Changes arrive as pull requests against `main`, one concern per pull
+   request.
+2. The pull-request checks must pass before merge.
+3. The owner reviews and decides whether to merge.
+4. Notable changes are recorded in [CHANGELOG.md](CHANGELOG.md). Planned work
+   lives in [ROADMAP.md](ROADMAP.md), and known gaps in
+   [docs/OPEN_PROBLEMS.md](docs/OPEN_PROBLEMS.md).
 
-1. Record the eight-character base tip and the Ship/PR number in the tip-cite.
-2. Keep the citation scoped to the repository change; it is not an approval or deployment record.
-3. Open the documentation PR from that cited base.
-4. The Steward resolves the citation after the PR merges.
-5. Do not use the citation to invent or imply `READY`.
+## What the repository can and can't show
 
-Credentials stay in Jenkins or other approved external systems, never in this repository.
+Repository files, checks, manifests and pull requests show the intended
+implementation. They aren't approval for, or proof of, a live deployment.
+Jenkins runs, registry provenance, EKS context, rollout health and operator
+authorization must be verified in the environment being changed.
 
-For governance guidance, prefer this document over `CODEOWNERS`.
-
-Pair note: mirrors aks-ado #79 tip `0ffd6b5e`.
+Credentials stay in Jenkins or other approved external systems, never in this
+repository.

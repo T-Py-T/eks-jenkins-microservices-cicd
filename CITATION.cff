@@ -1,4 +1,3 @@
-# Tip-cite: base main `99d7ea89` + Ship 164; paired with aks-ado Ship 163 / PR #82 `6d6a0efb`. Steward resolves after merge; this pointer is not approval and never `READY`.
 cff-version: 1.2.0
 message: "If you use this repository, please cite it."
 title: "EKS Microservices Delivery with Jenkins"

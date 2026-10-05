@@ -1,12 +1,7 @@
 # Notice
 
-> Tip-cite bank: base main `f2f8c983` + this PR. Steward resolves after merge;
-> provenance only; no `READY` claim.
-
-**Status:** attribution and provenance record. This page names upstream sources,
-repository boundaries, and related notice documents for this Jenkins and Amazon
-EKS microservices CI/CD lab. It is not a scorecard, security certification,
-readiness declaration, or invented score.
+This page names the upstream sources, repository boundaries and related notice
+documents for this Jenkins and Amazon EKS microservices CI/CD lab.
 
 ## Upstream application
 
@@ -30,8 +25,8 @@ This lab documents a Jenkins pipeline path, container image build and scan
 steps, and an operator-controlled EKS deployment workflow. References to
 Jenkins, Amazon EKS, Docker, Grype, Skopeo, Kubernetes, `kubectl`, AWS, and
 Podman name platforms and tools used in the documented example. Mention of a
-platform or tool is descriptive only; it is not an endorsement, certification,
-or `READY` claim for any provider, registry, cluster, or scan result.
+platform or tool is descriptive only; it is not an endorsement or certification
+of any provider, registry, cluster or scan result.
 
 ## Provenance boundary
 
@@ -40,7 +35,7 @@ present in source control. They do not establish current Jenkins build numbers,
 registry receipts, image scan outcomes, EKS rollout health, or operator
 authorization. Live evidence remains with the authorized environment and must be
 recorded separately. See [docs/OPEN_PROBLEMS.md](docs/OPEN_PROBLEMS.md) for
-active evidence gaps and held decisions.
+known gaps and held decisions.
 
 ## Secrets and sensitive material
 
@@ -56,13 +51,5 @@ authentication boundaries.
 - [LICENSE](LICENSE) — MIT terms for repository-specific work.
 - [SECURITY.md](SECURITY.md) — vulnerability reporting boundary; separate from
   this attribution record.
-- [docs/OPEN_PROBLEMS.md](docs/OPEN_PROBLEMS.md) — evidence gaps and held
-  decisions; not a scorecard or `READY` gate.
-
-## Explicit non-claims
-
-- No attribution or provenance statement here is a `READY` declaration.
-- No score, metric, production outcome, or security certification is asserted.
-- No live Jenkins run, registry scan, or EKS rollout is inferred from this page.
-- The tip-cite above is only a trace pointer; the Steward resolves it against
-  `main` after merge. It is not approval and never implies `READY`.
+- [docs/OPEN_PROBLEMS.md](docs/OPEN_PROBLEMS.md) — known gaps and held
+  decisions.
