@@ -1,64 +1,170 @@
+<div align="center">
+
 # EKS Microservices Delivery with Jenkins
+
+**Two Jenkins pipelines, one storefront: build and scan one service at a time, then deploy only what you pinned.**
+
+A Jenkins and Amazon EKS delivery path built around Google Cloud's
+[Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo),
+an e-commerce app made of eleven services written in Java, C#, Go, Node.js
+and Python.
 
 [![PR Checks](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/actions/workflows/pr-checks.yml/badge.svg?branch=main)](https://github.com/T-Py-T/eks-jenkins-microservices-cicd/actions/workflows/pr-checks.yml)
 
+[Getting started](#getting-started) ·
+[Worked path](#worked-path-validate-offline-like-the-pipelines-do) ·
+[Two pipelines](#two-pipelines-build-vs-apply) ·
+[Deploy to EKS](#deploy-to-your-own-eks-cluster) ·
+[Contributing](#contributing)
 
-A Jenkins and Amazon EKS delivery example built around
-[Google Cloud's Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo),
-an e-commerce application composed of eleven services written in Java, C#,
-Go, Node.js, and Python.
+![Jenkins and EKS delivery architecture: GitHub and Jenkins building and scanning images, Docker Hub, and dev and prod EKS clusters](docs/img/CICD-EKS-Architechture.png)
 
-The default branch contains the complete application, its EKS manifest, local
-validation tools, and two deliberately separate Jenkins paths: build and scan
-one service, then deploy an explicitly selected manifest.
+<sub>The target design. The repository holds the Jenkins pipelines, the EKS manifest and the services. Route 53, CloudFront, Terraform and Argo CD in the diagram have no configuration in this tree.</sub>
 
-**Stack:** Jenkins · Trivy · EKS/`kubectl` · optional Terraform · eleven-service Online Boutique.
-Cross-links: [SECURITY](SECURITY.md),
-[CONTRIBUTING](CONTRIBUTING.md), [LICENSE](LICENSE).
+</div>
 
-![Jenkins and EKS delivery architecture](docs/img/CICD-EKS-Architechture.png)
+## What you get
 
-## Architecture and evidence path
+- **A build pipeline that touches nothing by default.** The root
+  [`Jenkinsfile`](Jenkinsfile) takes a `SERVICE` choice, runs that service's
+  tests, Grype-scans the source, builds the image and Grype-scans it.
+  It pushes only when `PUBLISH_IMAGE=true` (default `false`).
+- **A separate deploy pipeline that applies nothing by default.**
+  [`deploy/eks/Jenkinsfile`](deploy/eks/Jenkinsfile) always validates the
+  manifest. It contacts a cluster only when `APPLY=true` (default `false`),
+  and then only with a digest-pinned copy of the manifest.
+- **Digest pinning before apply.**
+  [`scripts/pin_manifest_images.py`](scripts/pin_manifest_images.py) resolves
+  every image tag to a registry digest. It refuses `latest`, leftover
+  placeholders, and tags with no digest.
+- **One test entry point per service.**
+  [`scripts/test-service.sh`](scripts/test-service.sh) knows how to test each
+  of the eleven services. Jenkins and CI both call it.
+- **A full local storefront smoke test.**
+  [`scripts/integration-smoke.sh`](scripts/integration-smoke.sh) builds all
+  eleven images, starts them on an isolated Podman network, completes a cart
+  checkout, and runs a short load sample.
 
-The architecture image is a map of the repository's inspectable delivery path: the
-service source and tests feed the root [`Jenkinsfile`](Jenkinsfile) for a selected
-service's checks, source and image scans, build, and optional publish; the
-deployment path at [`deploy/eks/Jenkinsfile`](deploy/eks/Jenkinsfile) validates and
-resolves the selected EKS manifest before an operator-controlled apply. Review the
-[delivery flow](#delivery-flow), [local validation](#local-validation), and
-[EKS deployment](#eks-deployment) sections together when tracing that path. These
-repository paths describe what an authorized operator can inspect or exercise;
-they do not prove that Jenkins, a registry, or an EKS cluster has run successfully.
-Live run, scan, rollout, and authentication evidence must come from the authorized
-environment and is not inferred from this README. This is not a `READY` claim,
-score, or production outcome.
+## Getting started
 
-## Repository layout
+### Prerequisites for local checks
 
-```text
-services/                 eleven Online Boutique services and Dockerfiles
-deploy/eks/               Kubernetes resources and the explicit deploy pipeline
-scripts/test-service.sh   one local/Jenkins test entry point per service
-tests/                    repository policy and service startup checks
-Jenkinsfile               parameterized build, scan, and optional publish flow
+- Python 3 and [`pre-commit`](https://pre-commit.com/)
+- Go (the kubeconform module asks for Go 1.26 or newer; with the default
+  `GOTOOLCHAIN=auto`, `go` downloads it)
+- Node.js and npm for the Node services
+- Optional, for the other services: Java 25, .NET 10 and `pip-audit`
+- Optional, for the full smoke test: Podman
+
+### Clone and check
+
+```bash
+git clone https://github.com/T-Py-T/eks-jenkins-microservices-cicd.git
+cd eks-jenkins-microservices-cicd
+
+pre-commit run --all-files
+go run github.com/yannh/kubeconform/cmd/kubeconform@v0.8.0 \
+  -strict -summary deploy/eks/deployment-service.yml
 ```
 
-The older service-named branches are retained as project history. `main` is the
-supported, self-contained source tree.
+Expected output:
 
-## Keep exploring
+```text
+repository policy........................................................Passed
+Summary: 24 resources found in 1 file - Valid: 24, Invalid: 0, Errors: 0, Skipped: 0
+```
 
-- [Documentation index](docs/README.md) — purpose of `/docs` and links to repository documents; not a scorecard or `READY` gate.
-- [Security](SECURITY.md) — vulnerability reporting; not a scorecard or `READY` gate.
-- [Contributing](CONTRIBUTING.md) — contribution and tip-cite rules; not a scorecard or `READY` gate.
-- [Pull request template](.github/PULL_REQUEST_TEMPLATE.md) — PR summary, validation, and tip-cite scaffold; not a scorecard or `READY` gate.
-- [Notice](NOTICE.md) — attribution and provenance pointers; not a scorecard or `READY` gate.
-- [Funding](.github/FUNDING.yml) — sponsorship pointer; not a scorecard or `READY` gate.
-- [CODEOWNERS](.github/CODEOWNERS) — review routing and provenance pointers; not a scorecard or `READY` gate.
-- [Maintainers](MAINTAINERS.md) — factual owner and stewardship pointers; not a scorecard or `READY` gate.
-- [Roadmap](ROADMAP.md) — planned evidence-backed work; not a scorecard or `READY` gate.
-- [Open problems and held decisions](docs/OPEN_PROBLEMS.md) — active status
-  inventory, not a scorecard or `READY` gate.
+## Worked path: validate offline, like the pipelines do
+
+**1. Repository policy.** Checks that workflows run only on pull requests,
+Actions and Docker parents are pinned, Alpine packages don't float, the
+manifest has no `:latest`, both Jenkinsfiles default to no side effects, and
+the image pinning script behaves:
+
+```bash
+pre-commit run --all-files
+```
+
+**2. Manifest schema.** This is the same command the deploy pipeline's
+`Validate manifest` stage runs:
+
+```bash
+go run github.com/yannh/kubeconform/cmd/kubeconform@v0.8.0 \
+  -strict -summary deploy/eks/deployment-service.yml
+```
+
+**3. Test one service.** This is the build pipeline's `Test service` stage,
+run locally. Two quick ones:
+
+```bash
+./scripts/test-service.sh shippingservice    # go test ./...
+./scripts/test-service.sh currencyservice    # npm ci, npm audit, gRPC server boot check
+```
+
+**4. Test every service** (not run for this README; needs every toolchain
+listed above):
+
+```bash
+for service in \
+  adservice cartservice checkoutservice currencyservice emailservice \
+  frontend loadgenerator paymentservice productcatalogservice \
+  recommendationservice shippingservice; do
+  ./scripts/test-service.sh "$service"
+done
+```
+
+**5. Run the whole store locally** (not run for this README; builds eleven
+images):
+
+```bash
+CONTAINER_ENGINE=podman ./scripts/integration-smoke.sh
+```
+
+The smoke test removes its containers and network when it finishes.
+
+## Two pipelines: build vs apply
+
+Building an image and changing a cluster are separate jobs with separate
+switches.
+
+**Build: root [`Jenkinsfile`](Jenkinsfile)**
+
+```text
+SERVICE (choice)
+    │
+    ▼
+Prepare          image = <registry>/<service>:1.<BUILD_NUMBER>
+    │
+    ▼
+Test service     ./scripts/test-service.sh <service>
+    │
+    ▼
+Scan source      grype dir:services/<service> --config .grype.yaml
+    │
+    ▼
+Build image      docker build
+    │
+    ▼
+Scan image       grype <image> --config .grype.yaml
+    │
+    └──► Publish image   only when PUBLISH_IMAGE=true
+```
+
+**Apply: [`deploy/eks/Jenkinsfile`](deploy/eks/Jenkinsfile)**
+
+```text
+Validate manifest         kubeconform on deploy/eks/deployment-service.yml
+    │
+    └──► Deploy to Kubernetes   only when APPLY=true
+             pin_manifest_images.py → .jenkins/deployment-service.resolved.yml
+             kubeconform the resolved manifest
+             kubectl apply the resolved manifest
+             kubectl rollout status deployment/frontend
+```
+
+The build pipeline never pushes to Git. The deploy pipeline stores no cluster
+endpoint and takes its Kubernetes credential ID (`KUBE_CREDENTIALS_ID`) and
+namespace (`NAMESPACE`) as parameters.
 
 ## Services
 
@@ -78,88 +184,40 @@ supported, self-contained source tree.
 
 [![Online Boutique service architecture](docs/img/architecture-diagram.png)](docs/img/architecture-diagram.png)
 
-## Delivery flow
-
-The root [`Jenkinsfile`](Jenkinsfile) accepts a service name. A run tests that
-service, scans its source, builds its container, and scans the resulting image.
-Publishing is disabled by default and requires the `PUBLISH_IMAGE` parameter
-plus the configured Docker registry credential.
-
 ```text
-select service
-    │
-    ▼
-native tests and dependency audit
-    │
-    ▼
-Grype source scan
-    │
-    ▼
-container build and Grype image scan
-    │
-    └──► optional versioned registry push
+services/                 eleven Online Boutique services and Dockerfiles
+deploy/eks/               EKS manifest and the deploy pipeline
+scripts/                  per-service tests, integration smoke, image pinning
+tests/                    repository policy, pinning, and service startup checks
+Jenkinsfile               parameterized build, scan, and optional publish
 ```
 
-The deployment pipeline at [`deploy/eks/Jenkinsfile`](deploy/eks/Jenkinsfile)
-validates the manifest first. It applies resources only when an operator starts
-the job with `APPLY=true`; the repository contains no cluster endpoint or
-credential.
-
-## Local validation
-
-Install the current Java, .NET, Go, Node.js, and Python toolchains documented by
-the service manifests, plus `pre-commit` and `pip-audit`. Then run:
-
-```bash
-pre-commit run --all-files
-
-for service in \
-  adservice cartservice checkoutservice currencyservice emailservice \
-  frontend loadgenerator paymentservice productcatalogservice \
-  recommendationservice shippingservice; do
-  ./scripts/test-service.sh "$service"
-done
-```
-
-Validate the Kubernetes resources without contacting a cluster:
-
-```bash
-go run github.com/yannh/kubeconform/cmd/kubeconform@v0.8.0 \
-  -strict -summary deploy/eks/deployment-service.yml
-```
-
-Every external Docker parent is pinned by digest. The application image names
-in the EKS manifest are examples; replace them with the versioned images from
-your own successful Jenkins build before applying the manifest.
-
-Run the complete application in an isolated Podman network:
-
-```bash
-CONTAINER_ENGINE=podman ./scripts/integration-smoke.sh
-```
-
-The smoke test builds all eleven images, starts the storefront and its
-dependencies, completes a cart checkout, and runs a short zero-failure load
-sample. It removes the test containers and network when the run ends.
-
-The GitHub workflow runs only for pull requests and provides the merge gate for
-dependency audits, service tests, startup checks, and manifest validation.
+Older service-named branches are kept as history. `main` is the supported,
+self-contained tree.
 
 ## Jenkins setup
 
-Jenkins agents need Docker, Grype, Skopeo, Java 25, .NET 10, Go 1.27, Node.js
-24, Python 3.14, and the language package managers used by the services.
-Configure a username/password credential named `docker-cred` if image
-publishing is required.
+Not run for this README. Nothing here claims that a Jenkins server or EKS
+cluster is running now.
 
-For deployment, configure a Jenkins Kubernetes credential and pass its ID to
-the deployment job. Keep registry, AWS, and Kubernetes credentials in Jenkins;
-do not commit them to the repository.
+- Agents need Docker, Grype, Skopeo, Java 25, .NET 10, Go 1.27, Node.js 24,
+  Python 3.14, and the services' package managers.
+- Create a username/password credential named `docker-cred` if you will
+  publish images.
+- Create a Kubernetes credential for the deploy job and pass its ID as
+  `KUBE_CREDENTIALS_ID` (default `k8-cred`).
 
-## EKS deployment
+Keep registry, AWS and Kubernetes credentials in Jenkins, never in the
+repository.
 
-After replacing the `BUILD_NUMBER` placeholders with your versioned images,
-resolve each registry tag to an immutable digest before contacting the cluster:
+## Deploy to your own EKS cluster
+
+Not run for this README; this needs your own registry images, AWS account and
+cluster.
+
+Replace each `BUILD_NUMBER` placeholder in the manifest with an image from a
+successful build. Then pin the tags to digests and apply only the resolved
+copy:
 
 ```bash
 python3 scripts/pin_manifest_images.py \
@@ -172,55 +230,66 @@ kubectl rollout status deployment/frontend
 kubectl get pods,svc
 ```
 
-When `APPLY=true`, the deployment pipeline resolves every versioned image tag
-to its registry digest with Skopeo. The pipeline validates and applies only the
-resolved manifest. It stops before contacting the cluster if a tag is
-`latest`, a placeholder remains, or the registry does not return a digest.
+A Kubernetes service exposes the frontend. The other services talk over gRPC
+using the DNS names in the manifest, and Redis backs the cart service.
 
-The frontend is exposed through a Kubernetes service. The remaining services
-communicate over gRPC using the DNS names declared in the manifest, and Redis
-backs the cart service.
+## Gallery
 
-## Screenshots
+These are historical captures from an earlier version of this project, when
+each service had its own branch and pipeline and scans used Trivy. The current
+Jenkinsfiles are the parameterized, Grype-based pipelines described above.
+The captures show what a run looked like then; they are not evidence that
+anything is running today.
 
 | Stage | Capture |
 | --- | --- |
 | Jenkins multibranch project | ![Jenkins multibranch](docs/img/jenkins-multibranch.png) |
-| Service pipeline | ![Ad service pipeline](docs/img/jenkins-adservice-pipeline.png) |
-| Deployment pipeline | ![Infrastructure pipeline](docs/img/jenkins-infrasteps-pipeline.png) |
-| Earlier Trivy scan | ![Earlier Jenkins Trivy scan](docs/img/jenkins-trivy-scan.png) |
+| Per-service pipeline (earlier layout) | ![Ad service pipeline](docs/img/jenkins-adservice-pipeline.png) |
+| Deploy pipeline (earlier layout) | ![Infrastructure pipeline](docs/img/jenkins-infrasteps-pipeline.png) |
+| Trivy scan (earlier layout) | ![Earlier Jenkins Trivy scan](docs/img/jenkins-trivy-scan.png) |
 | EKS cluster | ![EKS cluster](docs/img/EKS-Cluster.png) |
-| Running storefront | ![Online Boutique storefront](docs/img/online-boutique-frontend-2.png) |
+| Storefront | ![Online Boutique storefront](docs/img/online-boutique-frontend-1.png) |
+| Cart and checkout | ![Online Boutique cart and checkout](docs/img/online-boutique-frontend-2.png) |
 
-Additional EKS, Terraform, Prometheus, Grafana, and application captures are
-available in [`docs/img/`](docs/img).
+More EKS, Terraform, Prometheus and Grafana captures are in
+[`docs/img/`](docs/img). The tree has no Terraform or monitoring
+configuration.
+
+## Roadmap and open problems
+
+Planned work is in [ROADMAP.md](ROADMAP.md). Known gaps and held decisions are
+in [docs/OPEN_PROBLEMS.md](docs/OPEN_PROBLEMS.md). Deploy-specific notes are in
+[deploy/eks/README.md](deploy/eks/README.md).
+
+## Contributing
+
+Good first areas: pipeline hardening, more offline checks, manifest
+improvements, or clearer Jenkins setup docs.
+
+1. Fork the repository and branch from `main`.
+2. Keep one concern per pull request and say which service, pipeline or
+   Kubernetes resource it touches.
+3. Run `pre-commit run --all-files`, the kubeconform check, and
+   `./scripts/test-service.sh <service>` for any service you change.
+4. Keep side effects behind explicit parameters (`PUBLISH_IMAGE`, `APPLY`).
+   The policy tests enforce this.
+5. Never commit credentials. Open a pull request against `main`; the PR Checks
+   workflow is the merge gate.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details. Please report
+vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
 
 ## License
 
-Repository-specific pipeline, deployment, and documentation work is available
-under the [MIT License](LICENSE). Online Boutique source files retain Google
+Repository-specific pipeline, deployment and documentation work is available
+under the [MIT License](LICENSE). The Online Boutique source files keep Google
 LLC's [Apache License 2.0](LICENSE-APACHE-2.0) notices. See
-[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). For vulnerability reporting
-see [SECURITY.md](SECURITY.md); for contribution expectations see
-[CONTRIBUTING.md](CONTRIBUTING.md).
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [NOTICE.md](NOTICE.md).
 
-## What this proves
+## Acknowledgements
 
-See also
-[`docs/OPEN_PROBLEMS.md`](docs/OPEN_PROBLEMS.md) for held evidence boundaries.
-
-## Steward tip-cite bank
-
-For a compact citation of a merged documentation tip, use the 8-character
-`main` tip prefix and pull request number:
-
-> Tip-cite bank:
-> - Ship 50 / PR #39: T-Py-T/eks-jenkins-microservices-cicd `025adce5`
-> - Ship 91 / PR #73: T-Py-T/eks-jenkins-microservices-cicd `a75013c4`
-> - Ship 240 / PR #65: base main `60b2798b` + PR pending Steward
-> - Ship 244: base main `9374c43a` + this PR pending Steward — README/SECURITY/CONTRIBUTING discoverability lean (pair aks Ship 243)
-
-> Tip-cite: main `9374c43a` + this PR pending Steward. Steward resolves; no READY claim or score is implied.
-
-The Steward resolves the short prefix to the full SHA. This citation bank does
-not mark work READY; do not invent or infer scores.
+- [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo)
+  by Google Cloud, the application these pipelines deliver
+- [Grype](https://github.com/anchore/grype),
+  [Skopeo](https://github.com/containers/skopeo) and
+  [kubeconform](https://github.com/yannh/kubeconform)
