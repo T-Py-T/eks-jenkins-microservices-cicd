@@ -15,6 +15,7 @@
 package main
 
 import (
+	"regexp"
 	"testing"
 
 	"golang.org/x/net/context"
@@ -51,7 +52,7 @@ func TestGetQuote(t *testing.T) {
 		t.Errorf("TestGetQuote (%v) failed", err)
 	}
 	if res.CostUsd.GetUnits() != 8 || res.CostUsd.GetNanos() != 990000000 {
-		t.Errorf("TestGetQuote: Quote value '%d.%d' does not match expected '%s'", res.CostUsd.GetUnits(), res.CostUsd.GetNanos(), "11.220000000")
+		t.Errorf("TestGetQuote: Quote value '%d.%d' does not match expected '%s'", res.CostUsd.GetUnits(), res.CostUsd.GetNanos(), "8.990000000")
 	}
 }
 
@@ -83,8 +84,8 @@ func TestShipOrder(t *testing.T) {
 	if err != nil {
 		t.Errorf("TestShipOrder (%v) failed", err)
 	}
-	// @todo improve quality of this test to check for a pattern such as '[A-Z]{2}-\d+-\d+'.
-	if len(res.TrackingId) != 18 {
-		t.Errorf("TestShipOrder: Tracking ID is malformed - has %d characters, %d expected", len(res.TrackingId), 18)
+	trackingIDPattern := regexp.MustCompile(`^[A-Z]{2}-\d+-\d+$`)
+	if !trackingIDPattern.MatchString(res.TrackingId) {
+		t.Errorf("TestShipOrder: Tracking ID %q does not match %s", res.TrackingId, trackingIDPattern.String())
 	}
 }
