@@ -98,16 +98,10 @@ function _getCurrencyData (callback) {
   callback(data);
 }
 
-/**
- * Helper function that handles decimal/fractional carrying
- */
-function _carry (amount) {
-  const fractionSize = Math.pow(10, 9);
-  amount.nanos += (amount.units % 1) * fractionSize;
-  amount.units = Math.floor(amount.units) + Math.floor(amount.nanos / fractionSize);
-  amount.nanos = amount.nanos % fractionSize;
-  return amount;
-}
+const {
+  convertMoney,
+  getSupportedCurrencyCodes,
+} = require('./currency');
 
 /**
  * Lists the supported currencies
@@ -115,7 +109,7 @@ function _carry (amount) {
 function getSupportedCurrencies (call, callback) {
   logger.info('Getting supported currencies...');
   _getCurrencyData((data) => {
-    callback(null, {currency_codes: Object.keys(data)});
+    callback(null, {currency_codes: getSupportedCurrencyCodes(data)});
   });
 }
 
@@ -123,36 +117,19 @@ function getSupportedCurrencies (call, callback) {
  * Converts between currencies
  */
 function convert (call, callback) {
-  try {
-    _getCurrencyData((data) => {
-      const request = call.request;
-
-      // Convert: from_currency --> EUR
-      const from = request.from;
-      const euros = _carry({
-        units: from.units / data[from.currency_code],
-        nanos: from.nanos / data[from.currency_code]
-      });
-
-      euros.nanos = Math.round(euros.nanos);
-
-      // Convert: EUR --> to_currency
-      const result = _carry({
-        units: euros.units * data[request.to_code],
-        nanos: euros.nanos * data[request.to_code]
-      });
-
-      result.units = Math.floor(result.units);
-      result.nanos = Math.floor(result.nanos);
-      result.currency_code = request.to_code;
-
+  _getCurrencyData((data) => {
+    try {
+      const result = convertMoney(call.request.from, call.request.to_code, data);
       logger.info(`conversion request successful`);
       callback(null, result);
-    });
-  } catch (err) {
-    logger.error(`conversion request failed: ${err}`);
-    callback(err.message);
-  }
+    } catch (err) {
+      logger.error(`conversion request failed: ${err}`);
+      callback({
+        code: grpc.status.INVALID_ARGUMENT,
+        details: err.message,
+      });
+    }
+  });
 }
 
 /**
