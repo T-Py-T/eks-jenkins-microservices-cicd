@@ -65,11 +65,17 @@ module.exports = function charge (request) {
   // throw UnacceptedCreditCard error.
   if (!(cardType === 'visa' || cardType === 'mastercard')) { throw new UnacceptedCreditCard(cardType); }
 
+  const { credit_card_expiration_year: year, credit_card_expiration_month: month } = creditCard;
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    throw new InvalidCreditCard();
+  }
+
   // Also validate expiration is > today.
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
-  const { credit_card_expiration_year: year, credit_card_expiration_month: month } = creditCard;
-  if ((currentYear * 12 + currentMonth) > (year * 12 + month)) { throw new ExpiredCreditCard(cardNumber.replace('-', ''), month, year); }
+  if ((currentYear * 12 + currentMonth) > (year * 12 + month)) {
+    throw new ExpiredCreditCard(cardNumber.replace(/-/g, ''), month, year);
+  }
 
   logger.info(`Transaction processed: ${cardType} ending ${cardNumber.substr(-4)} \
     Amount: ${amount.currency_code}${amount.units}.${amount.nanos}`);

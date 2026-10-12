@@ -64,6 +64,8 @@ const path = require('path');
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
 
+const { assertCurrencySupported } = require('./convert_validation');
+
 const MAIN_PROTO_PATH = path.join(__dirname, './proto/demo.proto');
 const HEALTH_PROTO_PATH = path.join(__dirname, './proto/grpc/health/v1/health.proto');
 
@@ -123,12 +125,15 @@ function getSupportedCurrencies (call, callback) {
  * Converts between currencies
  */
 function convert (call, callback) {
-  try {
-    _getCurrencyData((data) => {
+  _getCurrencyData((data) => {
+    try {
       const request = call.request;
 
       // Convert: from_currency --> EUR
       const from = request.from;
+      assertCurrencySupported(data, from.currency_code);
+      assertCurrencySupported(data, request.to_code);
+
       const euros = _carry({
         units: from.units / data[from.currency_code],
         nanos: from.nanos / data[from.currency_code]
@@ -148,11 +153,14 @@ function convert (call, callback) {
 
       logger.info(`conversion request successful`);
       callback(null, result);
-    });
-  } catch (err) {
-    logger.error(`conversion request failed: ${err}`);
-    callback(err.message);
-  }
+    } catch (err) {
+      logger.error(`conversion request failed: ${err}`);
+      callback({
+        code: grpc.status.INVALID_ARGUMENT,
+        message: err.message
+      });
+    }
+  });
 }
 
 /**
