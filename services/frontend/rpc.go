@@ -102,18 +102,19 @@ func (fe *frontendServer) getRecommendations(ctx context.Context, userID string,
 	if err != nil {
 		return nil, err
 	}
-	out := make([]*pb.Product, len(resp.GetProductIds()))
-	for i, v := range resp.GetProductIds() {
+	recommendedIDs := resp.GetProductIds()
+	if len(recommendedIDs) > 4 {
+		recommendedIDs = recommendedIDs[:4] // only fetch what the UI can display
+	}
+	out := make([]*pb.Product, len(recommendedIDs))
+	for i, v := range recommendedIDs {
 		p, err := fe.getProduct(ctx, v)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to get recommended product info (#%s)", v)
 		}
 		out[i] = p
 	}
-	if len(out) > 4 {
-		out = out[:4] // take only first four to fit the UI
-	}
-	return out, err
+	return out, nil
 }
 
 func (fe *frontendServer) getAd(ctx context.Context, ctxKeys []string) ([]*pb.Ad, error) {
