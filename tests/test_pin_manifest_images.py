@@ -8,8 +8,12 @@ from pathlib import Path
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-PIN_MANIFEST = REPOSITORY_ROOT / "scripts" / "pin_manifest_images.py"
+SCRIPTS_DIRECTORY = REPOSITORY_ROOT / "scripts"
+PIN_MANIFEST = SCRIPTS_DIRECTORY / "pin_manifest_images.py"
 RESOLVED_DIGEST = "sha256:" + ("a" * 64)
+
+sys.path.insert(0, str(SCRIPTS_DIRECTORY))
+import pin_manifest_images  # noqa: E402
 
 
 class PinManifestImagesTests(unittest.TestCase):
@@ -90,6 +94,36 @@ class PinManifestImagesTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("replace BUILD_NUMBER", result.stderr)
+
+    def test_pin_manifest_requires_version_tagged_images(self) -> None:
+        manifest = self.workspace / "only-digests.yml"
+        manifest.write_text(
+            "containers:\n"
+            f"  - name: redis\n    image: redis:8.10.1-alpine@sha256:{'d' * 64}\n"
+        )
+        output = self.workspace / "pinned.yml"
+        with self.assertRaisesRegex(ValueError, "no version-tagged images"):
+            pin_manifest_images.pin_manifest(manifest, output)
+
+
+class PinManifestImageReferenceTests(unittest.TestCase):
+    def test_split_tag_respects_registry_port(self) -> None:
+        repository, tag = pin_manifest_images.split_tag(
+            "registry.example.com:5000/team/emailservice:1.42"
+        )
+        self.assertEqual(repository, "registry.example.com:5000/team/emailservice")
+        self.assertEqual(tag, "1.42")
+
+    def test_split_digest_preserves_existing_digest(self) -> None:
+        digest = "sha256:" + ("c" * 64)
+        reference = f"redis:8.10.1-alpine@{digest}"
+        repository, parsed_digest = pin_manifest_images.split_digest(reference)
+        self.assertEqual(repository, "redis:8.10.1-alpine")
+        self.assertEqual(parsed_digest, digest)
+
+    def test_pin_reference_rejects_invalid_digest(self) -> None:
+        with self.assertRaisesRegex(ValueError, "invalid image digest"):
+            pin_manifest_images.pin_reference("redis:8.10.1-alpine@sha256:short")
 
 
 if __name__ == "__main__":

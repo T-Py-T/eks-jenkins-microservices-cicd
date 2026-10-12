@@ -24,6 +24,17 @@ def external_parent_image(from_line: str) -> str | None:
     return image
 
 
+class ExternalParentImageTests(unittest.TestCase):
+    def test_ignores_build_stage_aliases(self) -> None:
+        self.assertIsNone(external_parent_image("FROM build AS builder"))
+
+    def test_parses_platform_prefixed_parents(self) -> None:
+        image = external_parent_image(
+            "FROM --platform=linux/amd64 golang:1.27.0@sha256:" + ("a" * 64)
+        )
+        self.assertEqual(image, "golang:1.27.0@sha256:" + ("a" * 64))
+
+
 class RepositoryPolicyTests(unittest.TestCase):
     def test_github_workflows_only_run_for_pull_requests(self) -> None:
         workflow_paths = sorted((REPOSITORY_ROOT / ".github" / "workflows").glob("*.y*ml"))
