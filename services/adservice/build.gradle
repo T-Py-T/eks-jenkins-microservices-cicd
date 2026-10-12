@@ -48,7 +48,13 @@ dependencies {
         runtimeOnly "com.fasterxml.jackson.core:jackson-core:${jacksonCoreVersion}",
                 "com.fasterxml.jackson.core:jackson-databind:${jacksonDatabindVersion}",
                 "io.netty:netty-tcnative-boringssl-static:2.0.84.Final"
+
+        testImplementation "org.junit.jupiter:junit-jupiter:5.11.4"
     }
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
 }
 
 protobuf {
@@ -84,6 +90,11 @@ sourceSets {
             srcDirs 'build/generated/source/proto/main/grpc/hipstershop'
         }
     }
+    test {
+        java {
+            srcDirs 'src/test/java'
+        }
+    }
 }
 
 startScripts.enabled = false
@@ -100,7 +111,7 @@ task downloadRepos(type: Copy) {
 task adService(type: CreateStartScripts) {
     mainClass.set('hipstershop.AdService')
     applicationName = 'AdService'
-    outputDir = new File(project.buildDir, 'tmp')
+    outputDir = new File(project.buildDir, 'launchers')
     classpath = startScripts.classpath
     // @TODO: https://github.com/GoogleCloudPlatform/microservices-demo/issues/2517
     // defaultJvmOpts =
@@ -110,7 +121,7 @@ task adService(type: CreateStartScripts) {
 task adServiceClient(type: CreateStartScripts) {
     mainClass.set('hipstershop.AdServiceClient')
     applicationName = 'AdServiceClient'
-    outputDir = new File(project.buildDir, 'tmp')
+    outputDir = new File(project.buildDir, 'launchers')
     classpath = startScripts.classpath
     // @TODO: https://github.com/GoogleCloudPlatform/microservices-demo/issues/2517
     // defaultJvmOpts =
