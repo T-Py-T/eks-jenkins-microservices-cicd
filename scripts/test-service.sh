@@ -10,10 +10,14 @@ case "$service" in
     (cd "$repository_root/services/adservice" && ./gradlew --no-daemon build)
     ;;
   cartservice)
+    dotnet list "$repository_root/services/cartservice/src/cartservice.csproj" package --vulnerable --include-transitive
     dotnet test "$repository_root/services/cartservice/tests/cartservice.tests.csproj" --configuration Release
     ;;
   checkoutservice|frontend|productcatalogservice|shippingservice)
-    (cd "$repository_root/services/$service" && go test ./...)
+    (cd "$repository_root/services/$service" && \
+      go_version=$(sed -n 's/^go //p' go.mod | head -1) && \
+      GOTOOLCHAIN="go${go_version}" go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./... && \
+      go test ./...)
     ;;
   currencyservice)
     (cd "$repository_root/services/currencyservice" && npm ci && npm audit --omit=dev)
