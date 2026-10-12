@@ -48,13 +48,13 @@ func IsZero(m pb.Money) bool { return m.GetUnits() == 0 && m.GetNanos() == 0 }
 // IsPositive returns true if the specified money value is valid and is
 // positive.
 func IsPositive(m pb.Money) bool {
-	return IsValid(m) && m.GetUnits() > 0 || (m.GetUnits() == 0 && m.GetNanos() > 0)
+	return IsValid(m) && (m.GetUnits() > 0 || (m.GetUnits() == 0 && m.GetNanos() > 0))
 }
 
 // IsNegative returns true if the specified money value is valid and is
 // negative.
 func IsNegative(m pb.Money) bool {
-	return IsValid(m) && m.GetUnits() < 0 || (m.GetUnits() == 0 && m.GetNanos() < 0)
+	return IsValid(m) && (m.GetUnits() < 0 || (m.GetUnits() == 0 && m.GetNanos() < 0))
 }
 
 // AreSameCurrency returns true if values l and r have a currency code and
