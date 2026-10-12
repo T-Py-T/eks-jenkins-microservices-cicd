@@ -62,10 +62,15 @@ func (p *productCatalog) GetProduct(ctx context.Context, req *pb.GetProductReque
 func (p *productCatalog) SearchProducts(ctx context.Context, req *pb.SearchProductsRequest) (*pb.SearchProductsResponse, error) {
 	time.Sleep(extraLatency)
 
+	query := strings.TrimSpace(req.Query)
+	if query == "" {
+		return &pb.SearchProductsResponse{Results: nil}, nil
+	}
+
 	var ps []*pb.Product
 	for _, product := range p.parseCatalog() {
-		if strings.Contains(strings.ToLower(product.Name), strings.ToLower(req.Query)) ||
-			strings.Contains(strings.ToLower(product.Description), strings.ToLower(req.Query)) {
+		if strings.Contains(strings.ToLower(product.Name), strings.ToLower(query)) ||
+			strings.Contains(strings.ToLower(product.Description), strings.ToLower(query)) {
 			ps = append(ps, product)
 		}
 	}
