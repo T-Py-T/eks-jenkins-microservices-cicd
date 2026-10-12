@@ -109,3 +109,21 @@ func ensureSessionID(next http.Handler) http.HandlerFunc {
 		next.ServeHTTP(w, r)
 	}
 }
+
+// ensureWhitelistedCurrency resets the currency cookie when it is not a supported code.
+// Without this, a tampered cookie makes currency conversion fail on every page view.
+func ensureWhitelistedCurrency(next http.Handler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		c, err := r.Cookie(cookieCurrency)
+		if err == nil && c.Value != "" {
+			if _, ok := whitelistedCurrencies[c.Value]; !ok {
+				http.SetCookie(w, &http.Cookie{
+					Name:   cookieCurrency,
+					Value:  defaultCurrency,
+					MaxAge: cookieMaxAge,
+				})
+			}
+		}
+		next.ServeHTTP(w, r)
+	}
+}
