@@ -37,9 +37,12 @@ func CreateQuoteFromCount(count int) Quote {
 
 // CreateQuoteFromFloat takes a price represented as a float and creates a Price struct.
 func CreateQuoteFromFloat(value float64) Quote {
-	units, fraction := math.Modf(value)
+	roundedCents := int64(math.Round(value * 100))
+	if roundedCents < 0 {
+		roundedCents = 0
+	}
 	return Quote{
-		uint32(units),
-		uint32(math.Trunc(fraction * 100)),
+		Dollars: uint32(roundedCents / 100),
+		Cents:   uint32(roundedCents % 100),
 	}
 }
