@@ -437,6 +437,9 @@ func (fe *frontendServer) chooseAd(ctx context.Context, ctxKeys []string, log lo
 		log.WithField("error", err).Warn("failed to retrieve ads")
 		return nil
 	}
+	if len(ads) == 0 {
+		return nil
+	}
 	return ads[rand.Intn(len(ads))]
 }
 
