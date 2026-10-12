@@ -1,0 +1,45 @@
+name: Microservice coverage tests
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: microservice-coverage-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  node-and-python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+
+      - name: Install recommendation service dependencies
+        run: |
+          python -m pip install --disable-pip-version-check \
+            -r services/recommendationservice/requirements.txt
+
+      - name: Run recommendation service unit tests
+        run: python -m unittest tests.test_recommendation_service
+
+      - name: Run currency service conversion tests
+        run: |
+          cd services/currencyservice
+          npm ci
+          node --test tests/conversion.test.js
