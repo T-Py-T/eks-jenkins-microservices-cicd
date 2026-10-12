@@ -105,6 +105,8 @@ public final class AdService {
         if (allAds.isEmpty()) {
           // Serve random ads.
           allAds = service.getRandomAds();
+        } else if (allAds.size() > MAX_ADS_TO_SERVE) {
+          allAds = limitAdsToServe(allAds);
         }
         AdResponse reply = AdResponse.newBuilder().addAllAds(allAds).build();
         responseObserver.onNext(reply);
@@ -131,6 +133,20 @@ public final class AdService {
       ads.add(Iterables.get(allAds, random.nextInt(allAds.size())));
     }
     return ads;
+  }
+
+  /** Caps contextual ad matches to {@link #MAX_ADS_TO_SERVE}, matching random-ad behavior. */
+  static List<Ad> limitAdsToServe(List<Ad> candidates) {
+    if (candidates.size() <= MAX_ADS_TO_SERVE) {
+      return new ArrayList<>(candidates);
+    }
+    List<Ad> pool = new ArrayList<>(candidates);
+    List<Ad> limited = new ArrayList<>(MAX_ADS_TO_SERVE);
+    for (int i = 0; i < MAX_ADS_TO_SERVE; i++) {
+      int index = random.nextInt(pool.size());
+      limited.add(pool.remove(index));
+    }
+    return limited;
   }
 
   private static AdService getInstance() {
