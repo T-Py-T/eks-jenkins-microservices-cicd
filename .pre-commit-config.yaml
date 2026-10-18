@@ -6,3 +6,19 @@ repos:
         entry: python3 -m unittest tests.test_repository_policy tests.test_pin_manifest_images
         language: system
         pass_filenames: false
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.22.1
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+        files: ^\.github/
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+        files: ^(\.github/|\.pre-commit-config\.yaml|scripts/ci-local\.sh)
+      - id: trailing-whitespace
+        files: ^(\.github/|\.pre-commit-config\.yaml|scripts/ci-local\.sh)
