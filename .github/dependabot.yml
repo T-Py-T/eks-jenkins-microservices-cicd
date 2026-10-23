@@ -5,86 +5,154 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: npm
     directory: /services/currencyservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      npm:
+        patterns:
+          - "*"
   - package-ecosystem: npm
     directory: /services/paymentservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      npm:
+        patterns:
+          - "*"
 
   - package-ecosystem: pip
     directory: /services/emailservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      pip:
+        patterns:
+          - "*"
   - package-ecosystem: pip
     directory: /services/loadgenerator
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      pip:
+        patterns:
+          - "*"
   - package-ecosystem: pip
     directory: /services/recommendationservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      pip:
+        patterns:
+          - "*"
 
   - package-ecosystem: docker
     directory: /services/adservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/cartservice/src
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/checkoutservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/currencyservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/emailservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/frontend
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/loadgenerator
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/paymentservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/productcatalogservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/recommendationservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"
   - package-ecosystem: docker
     directory: /services/shippingservice
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    groups:
+      docker:
+        patterns:
+          - "*"

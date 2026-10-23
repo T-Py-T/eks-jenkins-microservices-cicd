@@ -4,12 +4,15 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
 
 permissions:
   contents: read
 
 concurrency:
-  group: pull-request-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -47,16 +50,5 @@ jobs:
           distribution: temurin
           java-version: "25"
 
-      - name: Validate repository and services
-        run: |
-          python -m pip install --disable-pip-version-check pip-audit==2.10.1
-          python -m unittest tests.test_repository_policy tests.test_pin_manifest_images
-          for service in \
-            adservice cartservice checkoutservice currencyservice emailservice \
-            frontend loadgenerator paymentservice productcatalogservice \
-            recommendationservice shippingservice; do
-            ./scripts/test-service.sh "$service"
-          done
-
-      - name: Validate Kubernetes resources
-        run: go run github.com/yannh/kubeconform/cmd/kubeconform@v0.8.0 -strict -summary deploy/eks/deployment-service.yml
+      - name: Run local CI script
+        run: ./scripts/ci-local.sh
