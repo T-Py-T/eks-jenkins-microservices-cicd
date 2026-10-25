@@ -154,6 +154,7 @@ func main() {
 	var handler http.Handler = r
 	handler = &logHandler{log: log, next: handler}     // add logging
 	handler = ensureSessionID(handler)                 // add session ID
+	handler = ensureWhitelistedCurrency(handler)       // drop unsupported currency cookies
 	handler = otelhttp.NewHandler(handler, "frontend") // add OTel tracing
 
 	log.Infof("starting server on %s:%s", addr, srvPort)
