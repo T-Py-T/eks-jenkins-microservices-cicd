@@ -81,6 +81,7 @@ func TestIsPositive(t *testing.T) {
 		{"invalid (-/+)", mm(-1, +1), false},
 		{"negative (-/-)", mm(-1, -1), false},
 		{"invalid (+/-)", mm(+1, -1), false},
+		{"invalid nanos overflow", mm(0, 1000000000), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -102,6 +103,7 @@ func TestIsNegative(t *testing.T) {
 		{"invalid (-/+)", mm(-1, +1), false},
 		{"negative (-/-)", mm(-1, -1), true},
 		{"invalid (+/-)", mm(+1, -1), false},
+		{"invalid nanos overflow", mm(0, -1000000000), false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
