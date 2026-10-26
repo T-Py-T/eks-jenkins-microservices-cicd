@@ -71,7 +71,10 @@ namespace cartservice.cartstore
 
             try
             {
-                var cart = new Hipstershop.Cart();
+                var cart = new Hipstershop.Cart
+                {
+                    UserId = userId
+                };
                 await _cache.SetAsync(userId, cart.ToByteArray());
             }
             catch (Exception ex)
