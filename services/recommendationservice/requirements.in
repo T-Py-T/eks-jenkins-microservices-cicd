@@ -1,9 +1,9 @@
-google-api-core==2.39.0
-grpcio-health-checking==1.84.0
-grpcio==1.84.0
+google-api-core==2.43.0
+grpcio-health-checking==1.84.1
+grpcio==1.84.1
 python-json-logger==4.2.0
 requests==2.34.2
-certifi==2026.10.19
+certifi==2026.10.23
 rsa==4.9.1
 opentelemetry-distro==0.66b1
 opentelemetry-instrumentation-grpc==0.66b1
